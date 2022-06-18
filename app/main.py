@@ -20,16 +20,6 @@ class Usuario(db.Model):
   data_nascimento = db.Column(db.DateTime, nullable = False)
 
   def to_json(self):
-<<<<<<< Updated upstream
-    return {"id": self.id, "nome": self.nome, "email": self.email}
-
-#função mostrar todos os usuários
-# @app.get("/usuarios")
-@app.route("/usuarios", methods=["GET"])
-def mostrar_todos_usuarios():
-  usuarios_objetos = Usuario.query.all()
-  return jsonify({'usuarios': [usuario.to_json() for usuario in usuarios_objetos]})
-=======
     return {"id": self.id, "nome": self.nome, "email": self.email, "data_nascimento": self.data_nascimento}
 
 # Função para tratar erros
@@ -115,4 +105,3 @@ def deletar_usuario(id):
   except Exception as e:
     return detectar_e_retornar_erro(e)
     
->>>>>>> Stashed changes
