@@ -27,47 +27,26 @@ class Usuario(db.Model):
 
 # Função para tratar erros
 def detectar_e_retornar_erro(e):
-  print(type(e))
-  print(e)
-  if type(e) == sqlalchemy.exc.OperationalError:
-    if psycopg2.OperationalError in str(e):
-      print(e)
-      return {"Erro": "Erro Interno"}, 500
-    else:
-      return {"Erro": "Erro Desconhecido"}, 400
-  elif type(e) == sqlalchemy.exc.IntegrityError:
-    if "psycopg2.errors.UniqueViolation" in str(e):
-      print(e)
-      return {"Erro":"Email já cadastrado"}
-    else:
-      return {"Erro": "Erro Desconhecido"}, 400
-  elif type(e) == sqlalchemy.exc.DataError:
-    if "psycopg2.errors.InvalidDatetimeFormat" in str(e):
-      print(e)
-      return {"Erro": "Formato inválido para a data"}, 400
-    elif "psycopg2.errors.DatetimeFieldOverflow" in str(e):
-      print(e)
-      return {"Erro": "Formato inválido para a data"}, 400
-    else:
-      return {"Erro": "Erro Desconhecido"}, 400
-  elif type(e) == KeyError:
-    if "senha" in str(e):
-      print(e)
-      return {"Erro": "Campo senha não preenchido"}
-    if "nome" in str(e):
-      print(e)
-      return {"Erro": "Campo nome não preenchido"}
-    if "email" in str(e):
-      print(e)
-      return {"Erro": "Campo email não preenchido"}
-    else:
-      return {"Erro": "Erro Desconhecido"}, 400     
-  elif type(e) == AttributeError:
-    if "NoneType" in str(e):
-      print(e)
-      return {"Erro": "Usuário solicitado não existe"}
-  else:
-    return {"Erro": "Erro Desconhecido"}, 400
+  resposta_usuario = ({"Erro": "Erro Interno"}, 500)
+  string_erro = str(e)
+  erros_conhecidos = {
+    "psycopg2.OperationalError": ({"Erro": "Erro Interno"}, 500),
+    "psycopg2.errors.UniqueViolation": ({"Erro":"Email já cadastrado"}, 400),
+    "psycopg2.errors.InvalidDatetimeFormat": ({"Erro": "Formato inválido para a data"}, 400),
+    "psycopg2.errors.DatetimeFieldOverflow": ({"Erro": "Formato inválido para a data"}, 400),
+    "NoneType": ({"Erro": "Usuário solicitado não existe"}, 400)
+  }
+  for erro in erros_conhecidos:
+    if erro in string_erro:
+      resposta_usuario = erros_conhecidos[erro]
+      
+  return resposta_usuario
+
+def validar_body(body, parametros_obrigatorios):
+  for dado in parametros_obrigatorios:
+    if (dado not in body) or (body[dado] == ""):
+      return ({"Erro": f"Campo {dado} não preenchido"}, 400)
+  pass
   
 # rota para listar todos os usuários
 # @app.route("/usuarios", methods=["GET"])
@@ -92,20 +71,22 @@ def mostrar_um_usuario(id):
 @app.post("/usuarios")
 def criar_usuario():
   body = request.get_json()
+  body_valido = validar_body(body,["nome", "email", "senha", "data_nascimento"])
+  if body_valido:
+    return body_valido 
   try:
     usuario = Usuario(nome = body["nome"], email = body["email"], senha = body["senha"], data_nascimento = body["data_nascimento"])
     db.session.add(usuario)
     db.session.commit()
     return usuario.to_json(), 201
   except Exception as e:
-   return detectar_e_retornar_erro(e)
+    return detectar_e_retornar_erro(e)
 
 #rota para atualizar um usuário
 @app.put("/usuarios/<id>")
 def atualizar_usuario(id):
   usuario_objeto = Usuario.query.filter_by(id=id).first()
   body = request.get_json()
-
   try:
     if("nome" in body):
       usuario_objeto.nome = body["nome"]
@@ -119,7 +100,6 @@ def atualizar_usuario(id):
     db.session.add(usuario_objeto)
     db.session.commit()
     return usuario_objeto.to_json()
-
   except Exception as e:
     return detectar_e_retornar_erro(e)
 
@@ -127,12 +107,10 @@ def atualizar_usuario(id):
 @app.delete("/usuarios/<id>")
 def deletar_usuario(id):
   usuario_objeto = Usuario.query.filter_by(id=id).first()
-
   try:
     db.session.delete(usuario_objeto)
     db.session.commit()
-    return "", 204
-  
+    return "", 204  
   except Exception as e:
     return detectar_e_retornar_erro(e)
     
