@@ -1,3 +1,4 @@
+import string
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -26,9 +27,8 @@ class Usuario(db.Model):
       return detectar_e_retornar_erro(e)
 
 # Função para tratar erros
-def detectar_e_retornar_erro(e):
+def detectar_e_retornar_erro(erros):
   resposta_usuario = ({"Erro": "Erro Interno"}, 500)
-  string_erro = str(e)
   erros_conhecidos = {
     "psycopg2.OperationalError": ({"Erro": "Erro Interno"}, 500),
     "psycopg2.errors.UniqueViolation": ({"Erro":"Email já cadastrado"}, 400),
@@ -36,11 +36,11 @@ def detectar_e_retornar_erro(e):
     "psycopg2.errors.DatetimeFieldOverflow": ({"Erro": "Formato inválido para a data"}, 400),
     "NoneType": ({"Erro": "Usuário solicitado não existe"}, 400)
   }
+  lista_de_erros = []
   for erro in erros_conhecidos:
     if erro in string_erro:
-      resposta_usuario = erros_conhecidos[erro]
-      
-  return resposta_usuario
+      lista_de_erros.append(erros_conhecidos[erro][0])
+  return {"Erros": lista_de_erros}
 
 def validar_body(body, parametros_obrigatorios):
   for dado in parametros_obrigatorios:
@@ -73,14 +73,18 @@ def criar_usuario():
   body = request.get_json()
   body_valido = validar_body(body,["nome", "email", "senha", "data_nascimento"])
   if body_valido:
-    return body_valido 
-  try:
-    usuario = Usuario(nome = body["nome"], email = body["email"], senha = body["senha"], data_nascimento = body["data_nascimento"])
-    db.session.add(usuario)
-    db.session.commit()
-    return usuario.to_json(), 201
-  except Exception as e:
-    return detectar_e_retornar_erro(e)
+    return body_valido
+  erros = []
+  for e in range (7):
+    try:
+      usuario = Usuario(nome = body["nome"], email = body["email"], senha = body["senha"], data_nascimento = body["data_nascimento"])
+      db.session.add(usuario)
+      db.session.commit()
+      return usuario.to_json(), 201
+    except Exception as e:
+      erros.append(str(e))
+  if erros:
+    return detectar_e_retornar_erro(erros)
 
 #rota para atualizar um usuário
 @app.put("/usuarios/<id>")
@@ -114,3 +118,6 @@ def deletar_usuario(id):
   except Exception as e:
     return detectar_e_retornar_erro(e)
     
+# fazer lista de retorno de erros com todos os erros
+# tirar rotas inuteis
+# dar uma olhada na lib de validação de body request
