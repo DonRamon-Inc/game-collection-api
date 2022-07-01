@@ -1,28 +1,33 @@
 from ..models.usuario import Usuario
 from ..views.usuario_view import serializar_usuario
-from ..models.db import db
+import re
+from datetime import datetime
 
-def detectar_e_retornar_erro(erros):
-  resposta_usuario = ({"Erro": "Erro Interno"}, 500)
+def detectar_e_retornar_erro(erro):
+  erro = str(erro)
   erros_conhecidos = {
-    "psycopg2.OperationalError": {"Erro": "Erro Interno"},
-    "psycopg2.errors.UniqueViolation": {"Erro":"Email já cadastrado"},
-    "psycopg2.errors.InvalidDatetimeFormat": {"Erro": "Formato inválido para a data"},
-    "psycopg2.errors.DatetimeFieldOverflow": {"Erro": "Formato inválido para a data"},
-    "NoneType": {"Erro": "Usuário solicitado não existe"}
+    "psycopg2.OperationalError": ({"Erro": "Erro Interno"}, 500),
+    "NoneType": ({"Erro": "Usuário solicitado não existe"}, 400)
   }
-  lista_de_erros = []
-  for key, value in erros_conhecidos.items():
-    for e in erros:
-      if key in e:
-        lista_de_erros.append(value)
-        print(value)
-  return {"Erros": lista_de_erros}
+  for key in erros_conhecidos.keys():
+    if key in erro:
+      return erros_conhecidos[key]
+  return {"Erro": "Erro Interno"}, 500
 
 def validar_body(body, parametros_obrigatorios):
-  for dado in parametros_obrigatorios:
-    if (dado not in body) or (body[dado] == ""):
-      return ({"Erro": f"Campo {dado} não preenchido"}, 400)
+  # padroes = {
+  #   "nome": "",
+  #   "email": "",
+  #   "senha": "",
+  #   "data_nascimento": ""
+  # }
+  # for parametro in parametros_obrigatorios:
+  #   for keys in padroes.keys():
+  #     if parametro:
+  #       pass
+  for parametro in parametros_obrigatorios:
+    if (parametro not in body) or (body[parametro] == ""):
+      return ({"Erro": f"Campo {parametro} não preenchido"}, 400)
   pass
 
 def criar_usuario(request):
@@ -30,16 +35,12 @@ def criar_usuario(request):
   body_valido = validar_body(body,["nome", "email", "senha", "data_nascimento"])
   if body_valido:
     return body_valido
-  erros = []
-  for e in range (7):
-    try:
-      usuario = Usuario(nome = body["nome"], email = body["email"], senha = body["senha"], data_nascimento = body["data_nascimento"])
-      usuario.salvar()
-      return usuario.to_json(), 201
-    except Exception as e:
-      erros.append(str(e))
-  if erros:
-    return detectar_e_retornar_erro(erros)
+  try:
+    usuario = Usuario(nome = body["nome"], email = body["email"], senha = body["senha"], data_nascimento = body["data_nascimento"])
+    usuario.salvar()
+    return serializar_usuario(usuario), 201
+  except Exception as e:
+    return detectar_e_retornar_erro(e)
 
 def editar_usuario(request, id):
   usuario = Usuario.query.filter_by(id=id).first()
@@ -55,6 +56,6 @@ def editar_usuario(request, id):
       usuario.data_nascimento = body["data_nascimento"]
 
     usuario.salvar()
-    return usuario.to_json()
+    return serializar_usuario(usuario)
   except Exception as e:
     return detectar_e_retornar_erro(e)
