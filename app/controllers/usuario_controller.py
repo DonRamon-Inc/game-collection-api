@@ -2,6 +2,7 @@ from ..models.usuario import Usuario
 from ..views.usuario_view import serializar_usuario
 import re
 from datetime import datetime
+from flask import jsonify
 
 def detectar_e_retornar_erro(erro):
   erro = str(erro)
@@ -25,16 +26,25 @@ def validar_body(body, parametros_obrigatorios):
   #   for keys in padroes.keys():
   #     if parametro:
   #       pass
+  erro_body = False
+  retornos = []
   for parametro in parametros_obrigatorios:
     if (parametro not in body) or (body[parametro] == ""):
-      return ({"Erro": f"Campo {parametro} não preenchido"}, 400)
-  pass
+      retornos.append({"Erro": f"Campo {parametro} não preenchido"}) # ao inves de dar append em lista, dar num dict?
+      erro_body = True
+  if erro_body == True:
+    print(retornos)
+    return retornos # retorno precisa ser string, dict, tupla
+    # return {"Erro":"listadeerros"} será que rola?
+  else:
+    pass
 
 def criar_usuario(request):
   body = request.get_json()
   body_valido = validar_body(body,["nome", "email", "senha", "data_nascimento"])
   if body_valido:
-    return body_valido
+    print(body_valido)
+    return jsonify(body_valido)
   try:
     usuario = Usuario(nome = body["nome"], email = body["email"], senha = body["senha"], data_nascimento = body["data_nascimento"])
     usuario.salvar()
