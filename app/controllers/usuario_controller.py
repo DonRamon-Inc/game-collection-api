@@ -1,3 +1,4 @@
+from sqlalchemy import null
 from ..models.usuario import Usuario
 from ..views.usuario_view import serializar_usuario
 import re
@@ -13,38 +14,50 @@ def detectar_e_retornar_erro(erro):
   for key in erros_conhecidos.keys():
     if key in erro:
       return erros_conhecidos[key]
+  print(erro)
   return {"Erro": "Erro Interno"}, 500
 
-def validar_body(body, parametros_obrigatorios):
-  # padroes = {
-  #   "nome": "",
-  #   "email": "",
-  #   "senha": "",
-  #   "data_nascimento": ""
-  # }
-  # for parametro in parametros_obrigatorios:
-  #   for keys in padroes.keys():
-  #     if parametro:
-  #       pass
-  erro_body = False
-  retornos = []
+def validar_parametros_obrigatorios(body, parametros_obrigatorios):
+  parametros_vazios = []
   for parametro in parametros_obrigatorios:
     if (parametro not in body) or (body[parametro] == ""):
-      retornos.append({"Erro": f"Campo {parametro} não preenchido"}) # ao inves de dar append em lista, dar num dict?
-      erro_body = True
-  if erro_body == True:
-    print(retornos)
-    return retornos # retorno precisa ser string, dict, tupla
-    # return {"Erro":"listadeerros"} será que rola?
-  else:
-    pass
+      parametros_vazios.append(parametro)
+  if parametros_vazios:
+    campos_vazios = f"Campo(s) {parametros_vazios} não preenchido(s)"
+    return campos_vazios
+
+def validar_confirmacoes_email_senha(body):
+  erros_confirmacao = []
+  if body["email"] != body["confirmacao_email"]:
+    erros_confirmacao.append("Os emails informados não coincidem")
+  if body["senha"] != body["confirmacao_senha"]:
+    erros_confirmacao.append("As senhas informadas não coincidem")
+  return erros_confirmacao
+
+def validar_email(body):
+  email = body["email"]
+  email_regex = r"^\w+@\w+\.\w+$"
+  if re.search(email_regex, email) == None:
+    return "Email não existe"
+  email_existe = Usuario.query.filter_by(email = email).first()
+  if email_existe:
+    return "Email já cadastrado"
+
+def validar_body(body, parametros_obrigatorios):
+  retornos_funcoes = [
+                validar_parametros_obrigatorios(body, parametros_obrigatorios),
+                validar_confirmacoes_email_senha(body),
+                validar_email(body)
+  ]
+  erros_body = list(filter(None, retornos_funcoes))
+  if erros_body:
+    return {"Erro": erros_body}
 
 def criar_usuario(request):
   body = request.get_json()
-  body_valido = validar_body(body,["nome", "email", "senha", "data_nascimento"])
-  if body_valido:
-    print(body_valido)
-    return jsonify(body_valido)
+  body_invalido = validar_body(body,["nome", "email", "confirmacao_email", "senha", "confirmacao_senha", "data_nascimento"])
+  if body_invalido:
+    return jsonify(body_invalido), 400
   try:
     usuario = Usuario(nome = body["nome"], email = body["email"], senha = body["senha"], data_nascimento = body["data_nascimento"])
     usuario.salvar()
