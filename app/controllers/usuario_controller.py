@@ -51,12 +51,24 @@ def validar_senha(body):
     return ("Senha inválida. A senha precisa conter, no mínimo, 8 caracteres,"+
      " 1 letra e 1 número.")
 
+def validar_data_nascimento(body):
+  data_nascimento = body["data_nascimento"]
+  try:
+    data_formatada = datetime.strptime(data_nascimento, r"%Y-%m-%d")
+    if data_formatada.year > (datetime.now().year - 13):
+      return "É preciso ter mais de 13 anos para criar uma conta."
+  except ValueError:
+    return "Formato de data inválido"
+  except Exception:
+    return "Erro interno"
+
 def validar_body(body, parametros_obrigatorios):
   validacoes = [
                 validar_parametros_obrigatorios(body, parametros_obrigatorios),
                 validar_confirmacoes_email_senha(body),
                 validar_email(body),
-                validar_senha(body)
+                validar_senha(body),
+                validar_data_nascimento(body)
   ]
   erros_body = list(filter(None, validacoes))
   if erros_body:
