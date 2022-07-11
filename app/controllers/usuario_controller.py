@@ -44,11 +44,19 @@ def validar_email(body):
   if email_valido:
     return "Email já cadastrado"
 
+def validar_senha(body):
+  senha = body["senha"]
+  senha_regex = r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+  if re.search(senha_regex,senha) == None:
+    return ("Senha inválida. A senha precisa conter, no mínimo, 8 caracteres,"+
+     " 1 letra e 1 número.")
+
 def validar_body(body, parametros_obrigatorios):
   validacoes = [
                 validar_parametros_obrigatorios(body, parametros_obrigatorios),
                 validar_confirmacoes_email_senha(body),
-                validar_email(body)
+                validar_email(body),
+                validar_senha(body)
   ]
   erros_body = list(filter(None, validacoes))
   if erros_body:
