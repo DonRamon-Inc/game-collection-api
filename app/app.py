@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask
-from .models.db import db #..models.db?
+from .models.db import db
 from .rotas import declarar_rotas
 
 def iniciar_app():

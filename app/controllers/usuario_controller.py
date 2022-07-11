@@ -1,4 +1,3 @@
-from sqlalchemy import null
 from ..models.usuario import Usuario
 from ..views.usuario_view import serializar_usuario
 import re
@@ -32,24 +31,26 @@ def validar_confirmacoes_email_senha(body):
     erros_confirmacao.append("Os emails informados não coincidem")
   if body["senha"] != body["confirmacao_senha"]:
     erros_confirmacao.append("As senhas informadas não coincidem")
-  return erros_confirmacao
+  if erros_confirmacao:
+    return erros_confirmacao
+
 
 def validar_email(body):
   email = body["email"]
   email_regex = r"^\w+@\w+\.\w+$"
   if re.search(email_regex, email) == None:
     return "Email não existe"
-  email_existe = Usuario.query.filter_by(email = email).first()
-  if email_existe:
+  email_valido = Usuario.query.filter_by(email = email).first()
+  if email_valido:
     return "Email já cadastrado"
 
 def validar_body(body, parametros_obrigatorios):
-  retornos_funcoes = [
+  validacoes = [
                 validar_parametros_obrigatorios(body, parametros_obrigatorios),
                 validar_confirmacoes_email_senha(body),
                 validar_email(body)
   ]
-  erros_body = list(filter(None, retornos_funcoes))
+  erros_body = list(filter(None, validacoes))
   if erros_body:
     return {"Erro": erros_body}
 
@@ -62,23 +63,5 @@ def criar_usuario(request):
     usuario = Usuario(nome = body["nome"], email = body["email"], senha = body["senha"], data_nascimento = body["data_nascimento"])
     usuario.salvar()
     return serializar_usuario(usuario), 201
-  except Exception as e:
-    return detectar_e_retornar_erro(e)
-
-def editar_usuario(request, id):
-  usuario = Usuario.query.filter_by(id=id).first()
-  body = request.get_json()
-  try:
-    if("nome" in body):
-      usuario.nome = body["nome"]
-    if("email" in body):
-      usuario.email = body["email"]
-    if("senha" in body):
-      usuario.senha = body["senha"]
-    if("data_nascimento" in body):
-      usuario.data_nascimento = body["data_nascimento"]
-
-    usuario.salvar()
-    return serializar_usuario(usuario)
   except Exception as e:
     return detectar_e_retornar_erro(e)
