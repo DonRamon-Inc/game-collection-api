@@ -61,9 +61,9 @@ def validar_data_nascimento(body):
     return "Erro interno"
 
 def validar_body(body, parametros_obrigatorios):
-  valida_request = validar_parametros_obrigatorios(body, parametros_obrigatorios)
-  if valida_request != []:
-    return f"Campo(s) {valida_request} não preenchido(s)"
+  campos_invalidos = validar_parametros_obrigatorios(body, parametros_obrigatorios)
+  if campos_invalidos != []:
+    return f"Campo(s) {campos_invalidos} não preenchido(s)"
   validacoes = [
                 validar_confirmacoes_email_senha(body),
                 validar_email(body),
