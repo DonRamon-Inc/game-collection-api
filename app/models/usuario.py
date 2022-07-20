@@ -1,5 +1,9 @@
 from .db import db
+from ..utils.logger import Logger
+
 from werkzeug.security import generate_password_hash
+
+logger = Logger("UsuarioModel")
 
 class Usuario(db.Model):
   id = db.Column(db.Integer, primary_key = True)
@@ -15,5 +19,7 @@ class Usuario(db.Model):
     self.data_nascimento = data_nascimento
 
   def salvar(self):
+    logger.info(f"Salvando usuário {self.email}")
     db.session.add(self)
     db.session.commit()
+    logger.info(f"Usuário {self.email} salvo com sucesso")

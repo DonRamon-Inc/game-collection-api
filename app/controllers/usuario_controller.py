@@ -1,8 +1,12 @@
 from ..models.usuario import Usuario
 from ..views.usuario_view import serializar_usuario
+from ..utils.logger import Logger
+
 import re
 from datetime import datetime
 from flask import jsonify, request
+
+logger = Logger("UsuarioController")
 
 def detectar_e_retornar_erro(erro):
   erro = str(erro)
@@ -76,6 +80,7 @@ def validar_body(body, parametros_obrigatorios):
 
 def criar_usuario():
   body = request.get_json()
+  logger.info(f"Chamada recebida com parâmetros {body.keys()}")
   body_invalido = validar_body(body,["nome", "email", "confirmacao_email", "senha", "confirmacao_senha", "data_nascimento"])
   if body_invalido:
     return jsonify(body_invalido), 400
