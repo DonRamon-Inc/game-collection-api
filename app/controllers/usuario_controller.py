@@ -27,15 +27,13 @@ def validar_parametros_obrigatorios(body, parametros_obrigatorios):
       parametros_vazios.append(parametro)
   return parametros_vazios
 
-def validar_confirmacoes_email_senha(body):
-  erros_confirmacao = []
+def validar_confirmacao_email(body):
   if body["email"] != body["confirmacao_email"]:
-    erros_confirmacao.append("Os emails informados não coincidem")
-  if body["senha"] != body["confirmacao_senha"]:
-    erros_confirmacao.append("As senhas informadas não coincidem")
-  if erros_confirmacao:
-    return erros_confirmacao
+    return "Os emails informados não coincidem"
 
+def validar_confirmacao_senha(body):
+  if body["senha"] != body["confirmacao_senha"]:
+    return "As senhas informadas não coincidem"
 
 def validar_email(body):
   email = body["email"]
@@ -69,7 +67,8 @@ def validar_body(body, parametros_obrigatorios):
   if campos_invalidos != []:
     return f"Campo(s) {campos_invalidos} não preenchido(s)"
   validacoes = [
-                validar_confirmacoes_email_senha(body),
+                validar_confirmacao_email(body),
+                validar_confirmacao_senha(body),
                 validar_email(body),
                 validar_senha(body),
                 validar_data_nascimento(body)
