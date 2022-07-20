@@ -21,9 +21,7 @@ def validar_parametros_obrigatorios(body, parametros_obrigatorios):
   for parametro in parametros_obrigatorios:
     if (parametro not in body) or (body[parametro] == ""):
       parametros_vazios.append(parametro)
-  if parametros_vazios:
-    campos_vazios = f"Campo(s) {parametros_vazios} não preenchido(s)"
-    return campos_vazios
+  return parametros_vazios
 
 def validar_confirmacoes_email_senha(body):
   erros_confirmacao = []
@@ -63,8 +61,10 @@ def validar_data_nascimento(body):
     return "Erro interno"
 
 def validar_body(body, parametros_obrigatorios):
+  valida_request = validar_parametros_obrigatorios(body, parametros_obrigatorios)
+  if valida_request != []:
+    return f"Campo(s) {valida_request} não preenchido(s)"
   validacoes = [
-                validar_parametros_obrigatorios(body, parametros_obrigatorios),
                 validar_confirmacoes_email_senha(body),
                 validar_email(body),
                 validar_senha(body),
