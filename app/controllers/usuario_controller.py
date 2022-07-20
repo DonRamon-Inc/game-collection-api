@@ -2,7 +2,7 @@ from ..models.usuario import Usuario
 from ..views.usuario_view import serializar_usuario
 import re
 from datetime import datetime
-from flask import jsonify
+from flask import jsonify, request
 
 def detectar_e_retornar_erro(erro):
   erro = str(erro)
@@ -74,7 +74,7 @@ def validar_body(body, parametros_obrigatorios):
   if erros_body:
     return {"Erro": erros_body}
 
-def criar_usuario(request):
+def criar_usuario():
   body = request.get_json()
   body_invalido = validar_body(body,["nome", "email", "confirmacao_email", "senha", "confirmacao_senha", "data_nascimento"])
   if body_invalido:
