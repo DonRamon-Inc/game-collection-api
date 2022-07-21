@@ -63,11 +63,11 @@ def validar_body(body, parametros_obrigatorios):
   if campos_invalidos != []:
     return f"Campo(s) {campos_invalidos} não preenchido(s)"
   validacoes = [
-                validar_confirmacao_email(body),
-                validar_confirmacao_senha(body),
-                validar_email(body),
-                validar_senha(body),
-                validar_data_nascimento(body)
+  validar_confirmacao_email(body),
+  validar_confirmacao_senha(body),
+  validar_email(body),
+  validar_senha(body),
+  validar_data_nascimento(body)
   ]
   erros_body = list(filter(None, validacoes))
   if erros_body:
