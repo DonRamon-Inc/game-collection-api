@@ -1,5 +1,8 @@
 from .db import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from ..utils.logger import Logger
+
+logger = Logger("UsuarioModel")
 
 class Usuario(db.Model):
   id = db.Column(db.Integer, primary_key = True)
@@ -8,7 +11,6 @@ class Usuario(db.Model):
   senha = db.Column(db.String(255), nullable = False)
   data_nascimento = db.Column(db.DateTime, nullable = False)
 
-  #passa os parametros apenas cryptografando a senha na hora do cadastro.
   def __init__(self, nome, email, senha, data_nascimento):
     self.nome = nome
     self.email = email
@@ -19,6 +21,7 @@ class Usuario(db.Model):
     return check_password_hash(self.senha, senha)
 
   def salvar(self):
+    logger.info(f"Salvando usuário {self.email}")
     db.session.add(self)
     db.session.commit()
-
+    logger.info(f"Usuário {self.email} salvo com sucesso")
