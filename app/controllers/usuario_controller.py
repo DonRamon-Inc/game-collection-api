@@ -1,8 +1,9 @@
 from ..models.usuario import Usuario
 from ..views.usuario_view import serializar_usuario
-import os
+from .. import config
 import jwt
 import datetime
+
 
 def criar_usuario(request):
   body = request.get_json()
@@ -15,10 +16,17 @@ def criar_usuario(request):
 
 def logar_usuario(request):
   body = request.get_json()
+  # TODO validar body
+
   email, senha = body['email'], body["senha"]
   usuario = Usuario.query.filter_by(email=email).first()
   if not usuario or not usuario.verificar_senha(senha):
-    return 'Email ou Senha não confere'
+    return {'mensagem': 'Email ou Senha não confere'}, 400
 
-  tokenAutenticacao = jwt.encode({'sub' : usuario.id, 'user' : usuario.nome, 'iat' : datetime.datetime.utcnow(),'exp' :  datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, os.getenv('SECRET_KEY'))
-  return {'token' : tokenAutenticacao }
+  token_autenticacao = jwt.encode({
+    'sub' : usuario.id,
+    'user' : usuario.nome,
+    'iat' : datetime.datetime.utcnow(),
+    'exp' :  datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+   }, config.SECRET_KEY)
+  return {'token' : token_autenticacao}
