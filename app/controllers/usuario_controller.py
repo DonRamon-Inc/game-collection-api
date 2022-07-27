@@ -7,7 +7,6 @@ import datetime
 from ..utils.logger import Logger
 
 import re
-from datetime import datetime
 from flask import jsonify, request
 
 logger = Logger("UsuarioController")
@@ -58,8 +57,8 @@ def validar_senha(body):
 def validar_data_nascimento(body):
   data_nascimento = body["data_nascimento"]
   try:
-    data_formatada = datetime.strptime(data_nascimento, r"%Y-%m-%d")
-    if data_formatada.year > (datetime.now().year - 13):
+    data_formatada = datetime.datetime.strptime(data_nascimento, r"%Y-%m-%d")
+    if data_formatada.year > (datetime.datetime.now().year - 13):
       return "É preciso ter mais de 13 anos para criar uma conta."
   except ValueError:
     return "Formato de data inválido"
@@ -94,7 +93,7 @@ def criar_usuario():
   except Exception as e:
       return detectar_e_retornar_erro(e)
 
-def logar_usuario(request):
+def logar_usuario():
   body = request.get_json()
   # TODO validar body
 
