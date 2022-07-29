@@ -16,5 +16,4 @@ def iniciar_app():
 
 def configurar_app(app):
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-  app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
   app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL').replace("postgres://", "postgresql://")
