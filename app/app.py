@@ -4,6 +4,7 @@ from flask import Flask
 from .models.db import db
 from .rotas import declarar_rotas
 
+
 def iniciar_app():
   app = Flask(__name__)
 

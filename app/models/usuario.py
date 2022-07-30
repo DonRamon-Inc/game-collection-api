@@ -1,7 +1,6 @@
 from .db import db
+from werkzeug.security import generate_password_hash, check_password_hash
 from ..utils.logger import Logger
-
-from werkzeug.security import generate_password_hash
 
 logger = Logger("UsuarioModel")
 
@@ -17,6 +16,9 @@ class Usuario(db.Model):
     self.email = email
     self.senha = generate_password_hash(senha)
     self.data_nascimento = data_nascimento
+
+  def verificar_senha(self, senha):
+    return check_password_hash(self.senha, senha)
 
   def salvar(self):
     logger.info(f"Salvando usuário {self.email}")

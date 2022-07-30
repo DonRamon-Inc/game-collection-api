@@ -1,9 +1,12 @@
 from ..models.usuario import Usuario
 from ..views.usuario_view import serializar_usuario
+from .. import config
+import jwt
+import datetime
+
 from ..utils.logger import Logger
 
 import re
-from datetime import datetime
 from flask import jsonify, request
 
 logger = Logger("UsuarioController")
@@ -54,8 +57,8 @@ def validar_senha(body):
 def validar_data_nascimento(body):
   data_nascimento = body["data_nascimento"]
   try:
-    data_formatada = datetime.strptime(data_nascimento, r"%Y-%m-%d")
-    if data_formatada.year > (datetime.now().year - 13):
+    data_formatada = datetime.datetime.strptime(data_nascimento, r"%Y-%m-%d")
+    if data_formatada.year > (datetime.datetime.now().year - 13):
       return "É preciso ter mais de 13 anos para criar uma conta."
   except ValueError:
     return "Formato de data inválido"
@@ -88,4 +91,22 @@ def criar_usuario():
     usuario.salvar()
     return serializar_usuario(usuario), 201
   except Exception as e:
-    return detectar_e_retornar_erro(e)
+      return detectar_e_retornar_erro(e)
+
+def logar_usuario():
+  body = request.get_json()
+  # TODO validar body
+
+  email, senha = body['email'], body["senha"]
+  usuario = Usuario.query.filter_by(email=email).first()
+  if not usuario or not usuario.verificar_senha(senha):
+    return {'mensagem': 'Email ou Senha não confere'}, 400
+
+  token_autenticacao = jwt.encode({
+    'sub' : usuario.id,
+    'user' : usuario.nome,
+    'iat' : datetime.datetime.utcnow(),
+    'exp' :  datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+   }, config.SECRET_KEY)
+  return {'token' : token_autenticacao}
+
