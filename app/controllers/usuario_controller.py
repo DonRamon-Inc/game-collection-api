@@ -3,7 +3,7 @@ from ..views.usuario_view import serializar_usuario
 from .. import config
 import jwt
 import datetime
-
+import secrets
 from ..utils.logger import Logger
 
 import re
@@ -110,3 +110,15 @@ def logar_usuario():
    }, config.SECRET_KEY)
   return {'token' : token_autenticacao}
 
+def validar_usuario():
+  body = request.get_json()
+  logger.info(f"Chamada recebida com parâmetros {body.keys()}")
+  email, data_nascimento = body['email'], body['data_nascimento']
+  usuario = Usuario.query.filter_by(email=email).first()
+  if not usuario:
+    return {"Erro": "Email não cadastrado"}
+  if str(usuario.data_nascimento) == data_nascimento:
+    token_usuario = secrets.token_hex(16)
+    return {"Token": f"{token_usuario}"}
+  else:
+    return {"Erro": "Usuário não validado"}
