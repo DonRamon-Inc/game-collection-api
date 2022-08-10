@@ -110,3 +110,14 @@ def logar_usuario():
    }, config.SECRET_KEY)
   return {'token' : token_autenticacao}
 
+
+def auth_steam():
+  #TODO Receber ID da Steam do front-end
+  steam_ID = config.STEAM_ID
+  id_usuario_atual = '92'
+  usuario = Usuario.query.filter_by(id='92').first()
+  if not usuario or not steam_ID:
+    return {'mensagem': 'Usuario ou ID da Steam não encontrado'}, 401
+  usuario.steam_id = steam_ID
+  usuario.salvar()
+  return {'mensagem': 'ID da Steam registrado'}, 201
