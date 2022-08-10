@@ -72,7 +72,7 @@ def validar_body(body, parametros_obrigatorios, validacoes=[]):
   campos_invalidos = validar_parametros_obrigatorios(body, parametros_obrigatorios)
   if campos_invalidos != []:
     return {"Erro - Campos não preenchidos": campos_invalidos}
-  
+
   validacoes_result = []
   for funcao_validadora in validacoes:
     validacoes_result.append(funcao_validadora(body))
@@ -117,3 +117,16 @@ def logar_usuario():
     'exp' :  datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
    }, config.SECRET_KEY)
   return {'token' : token_autenticacao}
+
+
+
+def auth_steam():
+  #TODO Receber ID da Steam do front-end
+  steam_ID = config.STEAM_ID
+  id_usuario_atual = '92'
+  usuario = Usuario.query.filter_by(id='92').first()
+  if not usuario or not steam_ID:
+    return {'mensagem': 'Usuario ou ID da Steam não encontrado'}, 401
+  usuario.steam_id = steam_ID
+  usuario.salvar()
+  return {'mensagem': 'ID da Steam registrado'}, 201
