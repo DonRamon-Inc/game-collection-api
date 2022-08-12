@@ -1,6 +1,7 @@
 from ..models.usuario import Usuario
 from ..views.usuario_view import serializar_usuario
 from .. import config
+import secrets
 import jwt
 import datetime
 
