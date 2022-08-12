@@ -65,25 +65,35 @@ def validar_data_nascimento(body):
   except Exception:
     return "Erro interno"
 
-def validar_body(body, parametros_obrigatorios):
+
+def validar_body(body, parametros_obrigatorios, rota):
   campos_invalidos = validar_parametros_obrigatorios(body, parametros_obrigatorios)
   if campos_invalidos != []:
-    return f"Campo(s) {campos_invalidos} não preenchido(s)"
-  validacoes = [
-  validar_confirmacao_email(body),
-  validar_confirmacao_senha(body),
-  validar_email(body),
-  validar_senha(body),
-  validar_data_nascimento(body)
-  ]
-  erros_body = list(filter(None, validacoes))
-  if erros_body:
-    return {"Erro": erros_body}
+    return f"Campo(s) {campos_invalidos} não preenchido(s)" #ATÉ AQUI TA OK
+
+  if rota == "cadastro":
+    validacoes = [
+    validar_confirmacao_email(body),
+    validar_confirmacao_senha(body),
+    validar_email(body),
+    validar_senha(body),
+    validar_data_nascimento(body)
+    ]
+    erros_body = list(filter(None, validacoes))
+    if erros_body:
+      return {"Erro": erros_body}
+  
+  if rota == "login":
+      email, senha = body['email'], body["senha"]
+      usuario = Usuario.query.filter_by(email=email).first()
+      if not usuario or not usuario.verificar_senha(senha):
+        return {'Erro': 'Email ou Senha não confere'}
+
 
 def criar_usuario():
   body = request.get_json()
   logger.info(f"Chamada recebida com parâmetros {body.keys()}")
-  body_invalido = validar_body(body,["nome", "email", "confirmacao_email", "senha", "confirmacao_senha", "data_nascimento"])
+  body_invalido = validar_body(body,["nome", "email", "confirmacao_email", "senha", "confirmacao_senha", "data_nascimento"],"cadastro")
   if body_invalido:
     return jsonify(body_invalido), 400
   try:
@@ -97,10 +107,12 @@ def logar_usuario():
   body = request.get_json()
   # TODO validar body
 
+  body_invalido = validar_body(body,["email","senha"],"login")
+  if body_invalido:
+    return jsonify(body_invalido),400
+
   email, senha = body['email'], body["senha"]
   usuario = Usuario.query.filter_by(email=email).first()
-  if not usuario or not usuario.verificar_senha(senha):
-    return {'mensagem': 'Email ou Senha não confere'}, 400
 
   token_autenticacao = jwt.encode({
     'sub' : usuario.id,
@@ -110,3 +122,19 @@ def logar_usuario():
    }, config.SECRET_KEY)
   return {'token' : token_autenticacao}
 
+def validar_usuario():
+  body = request.get_json()
+  logger.info(f"Chamada recebida com parâmetros {body.keys()}")
+  body_invalido = validar_body(body,["email","data_nascimento"],"esqueci_senha")
+  if body_invalido:
+    return jsonify(body_invalido),400
+  email, data_nascimento = body['email'], body['data_nascimento']
+  usuario = Usuario.query.filter_by(email=email).first()
+  if not usuario:
+    return {"Erro": "Email não cadastrado"}
+  if str(usuario.data_nascimento) == data_nascimento:
+    token_usuario = secrets.token_hex(16)
+    return {"Token": f"{token_usuario}"}
+  else:
+    return {"Erro": "Usuário não validado"}
+    
