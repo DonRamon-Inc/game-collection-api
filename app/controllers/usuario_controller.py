@@ -113,11 +113,22 @@ def logar_usuario():
 
 def auth_steam():
   #TODO Receber ID da Steam do front-end
+  #TODO Detectar usuario atual.
   steam_ID = config.STEAM_ID
   id_usuario_atual = '92'
-  usuario = Usuario.query.filter_by(id='92').first()
+  usuario = Usuario.query.filter_by(id=id_usuario_atual).first()
   if not usuario or not steam_ID:
     return {'mensagem': 'Usuario ou ID da Steam não encontrado'}, 401
   usuario.steam_id = steam_ID
   usuario.salvar()
   return {'mensagem': 'ID da Steam registrado'}, 201
+
+def auth_steam_delete():
+  #TODO Detectar usuario atual.
+  id_usuario_atual = '92'
+  usuario = Usuario.query.filter_by(id=id_usuario_atual).first()
+  if not usuario:
+    return {'mensagem': 'Usuario não encontrado'}, 401
+  usuario.steam_id = None
+  usuario.salvar()
+  return {'mensagem': 'ID da Steam Deletado'}, 201
