@@ -6,3 +6,5 @@ def declarar_rotas(app):
   app.add_url_rule("/login", methods=["POST"], view_func=usuario_controller.logar_usuario)
 
   app.add_url_rule("/authSteam", methods=["POST"], view_func=usuario_controller.auth_steam)
+
+  app.add_url_rule("/authSteam", methods=["DELETE"], view_func=usuario_controller.auth_steam_delete)
