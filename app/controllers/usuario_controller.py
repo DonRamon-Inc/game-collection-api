@@ -44,6 +44,9 @@ def validar_email(body):
   email_regex = r"^\w+@\w+\.\w+$"
   if re.search(email_regex, email) == None:
     return "Email não existe"
+
+def validar_email_duplicado(body):
+  email = body["email"]
   email_valido = Usuario.query.filter_by(email = email).first()
   if email_valido:
     return "Email já cadastrado"
@@ -66,35 +69,35 @@ def validar_data_nascimento(body):
   except Exception:
     return "Erro interno"
 
+# validar_body(body, [validar_data_nascimento,validar_confirmacao_senha])
 
-def validar_body(body, parametros_obrigatorios, rota):
+
+def validar_body(body, parametros_obrigatorios, validacoes=[]):
   campos_invalidos = validar_parametros_obrigatorios(body, parametros_obrigatorios)
   if campos_invalidos != []:
-    return f"Campo(s) {campos_invalidos} não preenchido(s)" #ATÉ AQUI TA OK
-
-  if rota == "cadastro":
-    validacoes = [
-    validar_confirmacao_email(body),
-    validar_confirmacao_senha(body),
-    validar_email(body),
-    validar_senha(body),
-    validar_data_nascimento(body)
-    ]
-    erros_body = list(filter(None, validacoes))
-    if erros_body:
-      return {"Erro": erros_body}
+    return {"Erro - Campos não preenchidos": campos_invalidos}
+    # return f"Campo(s) {campos_invalidos} não preenchido(s)" #ATÉ AQUI TA OK
   
-  if rota == "login":
-      email, senha = body['email'], body["senha"]
-      usuario = Usuario.query.filter_by(email=email).first()
-      if not usuario or not usuario.verificar_senha(senha):
-        return {'Erro': 'Email ou Senha não confere'}
+  validacoes_result = []
+  for valid in validacoes:
+    validacoes_result.append(valid(body))
+
+  erros_body = list(filter(None, validacoes_result))
+  if erros_body:
+    return {"Erro": erros_body}
+  
+  # if rota == "login":
+  #     email, senha = body['email'], body["senha"]
+  #     usuario = Usuario.query.filter_by(email=email).first()
+  #     if not usuario or not usuario.verificar_senha(senha):
+  #       return {'Erro': 'Email ou Senha não confere'}
 
 
 def criar_usuario():
   body = request.get_json()
   logger.info(f"Chamada recebida com parâmetros {body.keys()}")
-  body_invalido = validar_body(body,["nome", "email", "confirmacao_email", "senha", "confirmacao_senha", "data_nascimento"],"cadastro")
+  body_invalido = validar_body(body,["nome", "email", "confirmacao_email", "senha", "confirmacao_senha", "data_nascimento"],
+  [validar_confirmacao_email,validar_confirmacao_senha,validar_data_nascimento,validar_email,validar_email_duplicado,validar_senha])
   if body_invalido:
     return jsonify(body_invalido), 400
   try:
@@ -106,9 +109,9 @@ def criar_usuario():
 
 def logar_usuario():
   body = request.get_json()
-  # TODO validar body
 
-  body_invalido = validar_body(body,["email","senha"],"login")
+  body_invalido = validar_body(body,["email","senha"],
+  [validar_email,validar_senha])
   if body_invalido:
     return jsonify(body_invalido),400
 
@@ -126,9 +129,10 @@ def logar_usuario():
 def validar_usuario():
   body = request.get_json()
   logger.info(f"Chamada recebida com parâmetros {body.keys()}")
-  body_invalido = validar_body(body,["email","data_nascimento"],"esqueci_senha")
+  body_invalido = validar_body(body,["email","data_nascimento"],[validar_email,validar_data_nascimento])
   if body_invalido:
     return jsonify(body_invalido),400
+    
   email, data_nascimento = body['email'], body['data_nascimento']
   usuario = Usuario.query.filter_by(email=email).first()
   if not usuario:
