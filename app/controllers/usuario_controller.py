@@ -69,14 +69,10 @@ def validar_data_nascimento(body):
   except Exception:
     return "Erro interno"
 
-# validar_body(body, [validar_data_nascimento,validar_confirmacao_senha])
-
-
 def validar_body(body, parametros_obrigatorios, validacoes=[]):
   campos_invalidos = validar_parametros_obrigatorios(body, parametros_obrigatorios)
   if campos_invalidos != []:
     return {"Erro - Campos não preenchidos": campos_invalidos}
-    # return f"Campo(s) {campos_invalidos} não preenchido(s)" #ATÉ AQUI TA OK
   
   validacoes_result = []
   for valid in validacoes:
@@ -85,13 +81,6 @@ def validar_body(body, parametros_obrigatorios, validacoes=[]):
   erros_body = list(filter(None, validacoes_result))
   if erros_body:
     return {"Erro": erros_body}
-  
-  # if rota == "login":
-  #     email, senha = body['email'], body["senha"]
-  #     usuario = Usuario.query.filter_by(email=email).first()
-  #     if not usuario or not usuario.verificar_senha(senha):
-  #       return {'Erro': 'Email ou Senha não confere'}
-
 
 def criar_usuario():
   body = request.get_json()
@@ -109,7 +98,6 @@ def criar_usuario():
 
 def logar_usuario():
   body = request.get_json()
-
   body_invalido = validar_body(body,["email","senha"],
   [validar_email,validar_senha])
   if body_invalido:
