@@ -1,7 +1,6 @@
 from ..models.usuario import Usuario
 from ..views.usuario_view import serializar_usuario
 from .. import config
-import secrets
 import jwt
 import datetime
 
@@ -105,6 +104,8 @@ def logar_usuario():
 
   email, senha = body['email'], body["senha"]
   usuario = Usuario.query.filter_by(email=email).first()
+  if not usuario or not usuario.verificar_senha(senha):
+    return {'mensagem': 'Email ou Senha não confere'}, 400
 
   token_autenticacao = jwt.encode({
     'sub' : usuario.id,
@@ -113,21 +114,3 @@ def logar_usuario():
     'exp' :  datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
    }, config.SECRET_KEY)
   return {'token' : token_autenticacao}
-
-def validar_usuario():
-  body = request.get_json()
-  logger.info(f"Chamada recebida com parâmetros {body.keys()}")
-  body_invalido = validar_body(body,["email","data_nascimento"],[validar_email,validar_data_nascimento])
-  if body_invalido:
-    return jsonify(body_invalido),400
-    
-  email, data_nascimento = body['email'], body['data_nascimento']
-  usuario = Usuario.query.filter_by(email=email).first()
-  if not usuario:
-    return {"Erro": "Email não cadastrado"}
-  if str(usuario.data_nascimento) == data_nascimento:
-    token_usuario = secrets.token_hex(16)
-    return {"Token": f"{token_usuario}"}
-  else:
-    return {"Erro": "Usuário não validado"}
-    
