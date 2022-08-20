@@ -1,4 +1,4 @@
-from ..models.usuario import Usuario
+from ..models import usuario as u
 from ..views.usuario_view import serializar_usuario
 from .. import config
 import jwt
@@ -7,7 +7,6 @@ import datetime
 from ..utils.logger import Logger
 
 import re
-from flask import jsonify, request
 
 logger = Logger("UsuarioController")
 
@@ -42,11 +41,11 @@ def validar_email(body):
   email = body["email"]
   email_regex = r"^\w+@\w+\.\w+$"
   if re.search(email_regex, email) == None:
-    return "Email não existe"
+    return "Email inválido"
 
 def validar_email_duplicado(body):
   email = body["email"]
-  email_valido = Usuario.query.filter_by(email = email).first()
+  email_valido = u.Usuario.query.filter_by(email = email).first()
   if email_valido:
     return "Email já cadastrado"
 
@@ -54,8 +53,7 @@ def validar_senha(body):
   senha = body["senha"]
   senha_regex = r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
   if re.search(senha_regex,senha) == None:
-    return ("Senha inválida. A senha precisa conter, no mínimo, 8 caracteres,"+
-     " 1 letra e 1 número.")
+    return ("Senha inválida")
 
 def validar_data_nascimento(body):
   data_nascimento = body["data_nascimento"]
@@ -72,7 +70,7 @@ def validar_body(body, parametros_obrigatorios, validacoes=[]):
   campos_invalidos = validar_parametros_obrigatorios(body, parametros_obrigatorios)
   if campos_invalidos != []:
     return {"Erro - Campos não preenchidos": campos_invalidos}
-  
+
   validacoes_result = []
   for valid in validacoes:
     validacoes_result.append(valid(body))
@@ -81,29 +79,29 @@ def validar_body(body, parametros_obrigatorios, validacoes=[]):
   if erros_body:
     return {"Erro": erros_body}
 
-def criar_usuario():
+def criar_usuario(request):
   body = request.get_json()
   logger.info(f"Chamada recebida com parâmetros {body.keys()}")
   body_invalido = validar_body(body,["nome", "email", "confirmacao_email", "senha", "confirmacao_senha", "data_nascimento"],
   [validar_confirmacao_email,validar_confirmacao_senha,validar_data_nascimento,validar_email,validar_email_duplicado,validar_senha])
   if body_invalido:
-    return jsonify(body_invalido), 400
+    return body_invalido, 400
   try:
-    usuario = Usuario(nome = body["nome"], email = body["email"], senha = body["senha"], data_nascimento = body["data_nascimento"])
+    usuario = u.Usuario(nome = body["nome"], email = body["email"], senha = body["senha"], data_nascimento = body["data_nascimento"])
     usuario.salvar()
     return serializar_usuario(usuario), 201
   except Exception as e:
       return detectar_e_retornar_erro(e)
 
-def logar_usuario():
+def logar_usuario(request):
   body = request.get_json()
   body_invalido = validar_body(body,["email","senha"],
   [validar_email,validar_senha])
   if body_invalido:
-    return jsonify(body_invalido),400
+    return body_invalido, 400
 
   email, senha = body['email'], body["senha"]
-  usuario = Usuario.query.filter_by(email=email).first()
+  usuario = u.Usuario.query.filter_by(email=email).first()
   if not usuario or not usuario.verificar_senha(senha):
     return {'mensagem': 'Email ou Senha não confere'}, 400
 
@@ -113,4 +111,4 @@ def logar_usuario():
     'iat' : datetime.datetime.utcnow(),
     'exp' :  datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
    }, config.SECRET_KEY)
-  return {'token' : token_autenticacao}
+  return {'token' : token_autenticacao}, 200
