@@ -84,12 +84,15 @@ def validar_body(body, parametros_obrigatorios, validacoes=[]):
 def criar_usuario():
   body = request.get_json()
   logger.info(f"Chamada recebida com parâmetros {body.keys()}")
-  body_invalido = validar_body(body,["nome", "email", "confirmacao_email", "senha", "confirmacao_senha", "data_nascimento"],
-  [validar_confirmacao_email,validar_confirmacao_senha,validar_data_nascimento,validar_email,validar_email_duplicado,validar_senha])
+  body_invalido = validar_body(body,
+  ["nome", "email", "confirmacao_email", "senha", "confirmacao_senha", "data_nascimento"],
+  [validar_confirmacao_email,validar_confirmacao_senha,validar_data_nascimento,validar_email,
+  validar_email_duplicado,validar_senha])
   if body_invalido:
     return jsonify(body_invalido), 400
   try:
-    usuario = Usuario(nome = body["nome"], email = body["email"], senha = body["senha"], data_nascimento = body["data_nascimento"])
+    usuario = Usuario(nome = body["nome"], email = body["email"], senha = body["senha"],
+    data_nascimento = body["data_nascimento"])
     usuario.salvar()
     return serializar_usuario(usuario), 201
   except Exception as e:
