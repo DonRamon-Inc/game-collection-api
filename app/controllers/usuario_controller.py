@@ -44,6 +44,9 @@ def validar_email(body):
   email_regex = r"^\w+@\w+\.\w+$"
   if re.search(email_regex, email) == None:
     return "Email não existe"
+
+def validar_email_duplicado(body):
+  email = body["email"]
   email_valido = Usuario.query.filter_by(email = email).first()
   if email_valido:
     return "Email já cadastrado"
@@ -66,29 +69,31 @@ def validar_data_nascimento(body):
   except Exception:
     return "Erro interno"
 
-def validar_body(body, parametros_obrigatorios):
+def validar_body(body, parametros_obrigatorios, validacoes=[]):
   campos_invalidos = validar_parametros_obrigatorios(body, parametros_obrigatorios)
   if campos_invalidos != []:
-    return f"Campo(s) {campos_invalidos} não preenchido(s)"
-  validacoes = [
-  validar_confirmacao_email(body),
-  validar_confirmacao_senha(body),
-  validar_email(body),
-  validar_senha(body),
-  validar_data_nascimento(body)
-  ]
-  erros_body = list(filter(None, validacoes))
+    return {"Erro - Campos não preenchidos": campos_invalidos}
+
+  validacoes_result = []
+  for funcao_validadora in validacoes:
+    validacoes_result.append(funcao_validadora(body))
+
+  erros_body = list(filter(None, validacoes_result))
   if erros_body:
     return {"Erro": erros_body}
 
 def criar_usuario():
   body = request.get_json()
   logger.info(f"Chamada recebida com parâmetros {body.keys()}")
-  body_invalido = validar_body(body,["nome", "email", "confirmacao_email", "senha", "confirmacao_senha", "data_nascimento"])
+  body_invalido = validar_body(body,
+  ["nome", "email", "confirmacao_email", "senha", "confirmacao_senha", "data_nascimento"],
+  [validar_confirmacao_email,validar_confirmacao_senha,validar_data_nascimento,validar_email,
+  validar_email_duplicado,validar_senha])
   if body_invalido:
     return jsonify(body_invalido), 400
   try:
-    usuario = Usuario(nome = body["nome"], email = body["email"], senha = body["senha"], data_nascimento = body["data_nascimento"])
+    usuario = Usuario(nome = body["nome"], email = body["email"], senha = body["senha"],
+    data_nascimento = body["data_nascimento"])
     usuario.salvar()
     return serializar_usuario(usuario), 201
   except Exception as e:
@@ -96,7 +101,10 @@ def criar_usuario():
 
 def logar_usuario():
   body = request.get_json()
-  # TODO validar body
+  body_invalido = validar_body(body,["email","senha"],
+  [validar_email,validar_senha])
+  if body_invalido:
+    return jsonify(body_invalido),400
 
   email, senha = body['email'], body["senha"]
   usuario = Usuario.query.filter_by(email=email).first()
