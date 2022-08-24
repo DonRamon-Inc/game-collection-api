@@ -1,3 +1,4 @@
+from sqlalchemy import null
 from ..models.usuario import Usuario
 from ..views.usuario_view import serializar_usuario
 from .. import config
@@ -117,8 +118,26 @@ def validar_usuario():
   usuario = Usuario.query.filter_by(email=email).first()
   if not usuario:
     return {"Erro": "Email não cadastrado"}
-  if str(usuario.data_nascimento) == data_nascimento:
-    token_usuario = secrets.token_hex(16)
-    return {"Token": f"{token_usuario}"}
+  elif str(usuario.data_nascimento) == data_nascimento:
+    token_esqueci_senha = secrets.token_hex()
+    usuario.token_esqueci_senha = token_esqueci_senha
+    usuario.salvar()
+    return {"Token": f"{token_esqueci_senha}"}
   else:
-    return {"Erro": "Usuário não validado"}
+    return {"Erro": "Usuário inválido"}
+
+def atualizar_senha():
+  body = request.get_json()
+  logger.info(f"Chamada recebida com parâmetros {body.keys()}")
+  token_esqueci_senha = body['token_esqueci_senha']
+  senha, confirmacao_senha = body['senha'], body['confirmacao_senha']
+  usuario = Usuario.query.filter_by(token_esqueci_senha=token_esqueci_senha).first()
+  if not usuario:
+    return {"Erro": "Token inválido"}
+  elif senha == confirmacao_senha:
+    usuario.senha = senha
+    usuario.token_esqueci_senha = None
+    usuario.salvar()
+    return {"Mensagem": "Senha alterada com sucesso"}
+  else:
+    return {"Erro": "Senha e confirmação de senha não coincidem"}

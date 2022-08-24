@@ -10,6 +10,7 @@ class Usuario(db.Model):
   email = db.Column(db.String(100), nullable = False, unique = True)
   senha = db.Column(db.String(255), nullable = False)
   data_nascimento = db.Column(db.DateTime, nullable = False)
+  token_esqueci_senha = db.Column(db.String(255), nullable = True)
 
   def __init__(self, nome, email, senha, data_nascimento):
     self.nome = nome

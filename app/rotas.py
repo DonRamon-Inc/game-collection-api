@@ -6,3 +6,5 @@ def declarar_rotas(app):
   app.add_url_rule("/login", methods=["POST"], view_func=usuario_controller.logar_usuario)
 
   app.add_url_rule("/esqueci_senha", methods=["POST"], view_func=usuario_controller.validar_usuario)
+
+  app.add_url_rule("/atualizar_senha", methods=["POST"], view_func=usuario_controller.atualizar_senha)
