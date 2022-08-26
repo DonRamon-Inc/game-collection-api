@@ -11,6 +11,7 @@ class Usuario(db.Model):
   senha = db.Column(db.String(255), nullable = False)
   data_nascimento = db.Column(db.DateTime, nullable = False)
   token_esqueci_senha = db.Column(db.String(255), nullable = True)
+  token_valido_ate = db.Column(db.DateTime, nullable = False)
 
   def __init__(self, nome, email, senha, data_nascimento):
     self.nome = nome
@@ -26,3 +27,10 @@ class Usuario(db.Model):
     db.session.add(self)
     db.session.commit()
     logger.info(f"Usuário {self.email} salvo com sucesso")
+
+  def salvar_atualizar_senha(self, senha):
+    logger.info(f"Salvando a alteração de senha do usuário {self.email}")
+    self.senha = generate_password_hash(senha)
+    db.session.add(self)
+    db.session.commit()
+    logger.info(f"Senha do usuário {self.email} alterada com sucesso")
