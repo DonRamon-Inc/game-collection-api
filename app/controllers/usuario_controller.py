@@ -72,7 +72,7 @@ def validar_body(body, parametros_obrigatorios, validacoes=[]):
   campos_invalidos = validar_parametros_obrigatorios(body, parametros_obrigatorios)
   if campos_invalidos != []:
     return {"Erro - Campos não preenchidos": campos_invalidos}
-  
+
   validacoes_result = []
   for funcao_validadora in validacoes:
     validacoes_result.append(funcao_validadora(body))
