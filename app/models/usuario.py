@@ -10,14 +10,16 @@ class Usuario(db.Model):
   email = db.Column(db.String(100), nullable = False, unique = True)
   senha = db.Column(db.String(255), nullable = False)
   data_nascimento = db.Column(db.DateTime, nullable = False)
+  steam_id = db.Column(db.String(80), nullable = True)
   token_esqueci_senha = db.Column(db.String(255), nullable = True)
   token_valido_ate = db.Column(db.DateTime, nullable = False)
 
-  def __init__(self, nome, email, senha, data_nascimento):
+  def __init__(self, nome, email, senha, data_nascimento, steam_id):
     self.nome = nome
     self.email = email
     self.senha = generate_password_hash(senha)
     self.data_nascimento = data_nascimento
+    self.steam_id = steam_id
 
   def verificar_senha(self, senha):
     return check_password_hash(self.senha, senha)

@@ -128,6 +128,30 @@ def logar_usuario():
    }, config.SECRET_KEY)
   return {'token' : token_autenticacao}
 
+
+
+def auth_steam():
+  #TODO Receber ID da Steam do front-end
+  #TODO Detectar usuario atual.
+  steam_ID = config.STEAM_ID
+  id_usuario_atual = '92'
+  usuario = Usuario.query.filter_by(id=id_usuario_atual).first()
+  if not usuario or not steam_ID:
+    return {'mensagem': 'Usuario ou ID da Steam não encontrado'}, 401
+  usuario.steam_id = steam_ID
+  usuario.salvar()
+  return {'mensagem': 'ID da Steam registrado'}, 201
+
+def auth_steam_delete():
+  #TODO Detectar usuario atual.
+  id_usuario_atual = '92'
+  usuario = Usuario.query.filter_by(id=id_usuario_atual).first()
+  if not usuario:
+    return {'mensagem': 'Usuario não encontrado'}, 401
+  usuario.steam_id = None
+  usuario.salvar()
+  return {'mensagem': 'ID da Steam Deletado'}, 201
+
 def validar_usuario():
   body = request.get_json()
   logger.info(f"Chamada recebida com parâmetros {body.keys()}")
@@ -140,7 +164,7 @@ def validar_usuario():
       datetime.datetime.timestamp(datetime.datetime.utcnow())).replace(".","")
 
     usuario.token_esqueci_senha = token_esqueci_senha
-    usuario.token_valido_ate = datetime.datetime.utcnow() + datetime.timedelta(minutes=3)
+    usuario.token_valido_ate = datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
     usuario.salvar()
     return {"Token": f"{token_esqueci_senha}"}
   elif str(usuario.data_nascimento) == data_nascimento and validar_token(usuario) == "token válido":
