@@ -130,8 +130,8 @@ def logar_usuario():
 
 def auth_steam():
   body = request.get_json()
-  steam_id = body['steam_id']
-  id_usuario_atual = body['id_usuario_atual']
+  steam_id = body["steam_id"]
+  id_usuario_atual = body["id_usuario_atual"]
   usuario = Usuario.query.filter_by(id=id_usuario_atual).first()
   if not usuario or not steam_id:
     return {'mensagem': 'Usuario ou ID da Steam não encontrado'}, 401
@@ -141,7 +141,7 @@ def auth_steam():
 
 def auth_steam_delete():
   body = request.get_json()
-  id_usuario_atual = body['id_usuario_atual']
+  id_usuario_atual = body["id_usuario_atual"]
   usuario = Usuario.query.filter_by(id=id_usuario_atual).first()
   if not usuario:
     return {'mensagem': 'Usuario não encontrado'}, 401
