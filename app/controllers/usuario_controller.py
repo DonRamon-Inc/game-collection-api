@@ -1,6 +1,7 @@
 from ..models.usuario import Usuario
 from ..views.usuario_view import serializar_usuario
 from .. import config
+from ..utils import auth
 import jwt
 import datetime
 import secrets
@@ -26,7 +27,8 @@ def detectar_e_retornar_erro(erro):
 def validar_parametros_obrigatorios(body, parametros_obrigatorios):
   parametros_vazios = []
   for parametro in parametros_obrigatorios:
-    if (parametro not in body) or (body[parametro] == ""):
+    parametro_apenas = body[parametro].strip()
+    if (parametro not in body) or (parametro_apenas == ""):
       parametros_vazios.append(parametro)
   return parametros_vazios
 
@@ -128,26 +130,23 @@ def logar_usuario():
    }, config.SECRET_KEY)
   return {'token' : token_autenticacao}
 
-def auth_steam():
+@auth.token_required
+def auth_steam(usuario):
   body = request.get_json()
+  logger.info(f"Chamada recebida com parâmetros {body}")
+  body_invalido = validar_body(body,["steam_id"])
+  if body_invalido:
+    return jsonify(body_invalido), 400
   steam_id = body["steam_id"]
-  id_usuario_atual = body["id_usuario_atual"]
-  usuario = Usuario.query.filter_by(id=id_usuario_atual).first()
-  if not usuario or not steam_id:
-    return {'mensagem': 'Usuario ou ID da Steam não encontrado'}, 401
   usuario.steam_id = steam_id
   usuario.salvar()
-  return {'mensagem': 'ID da Steam registrado'}, 201
+  return {'mensagem': 'ID da Steam registrado'}, 200
 
-def auth_steam_delete():
-  body = request.get_json()
-  id_usuario_atual = body["id_usuario_atual"]
-  usuario = Usuario.query.filter_by(id=id_usuario_atual).first()
-  if not usuario:
-    return {'mensagem': 'Usuario não encontrado'}, 401
+@auth.token_required
+def auth_steam_delete(usuario):
   usuario.steam_id = None
   usuario.salvar()
-  return {'mensagem': 'ID da Steam deletado'}, 201
+  return {'mensagem': 'ID da Steam deletado'}, 200
 
 def validar_usuario():
   #TODO VALIDAR BODY

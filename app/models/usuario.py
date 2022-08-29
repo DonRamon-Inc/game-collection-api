@@ -38,4 +38,3 @@ class Usuario(db.Model):
       db.session.add(self)
       db.session.commit()
       logger.info(f"Usuário {self.email} salvo com sucesso")
-
