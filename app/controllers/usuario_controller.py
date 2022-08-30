@@ -85,11 +85,11 @@ def validar_token(usuario):
   token = usuario.token_esqueci_senha
   token_timestamp = usuario.token_valido_ate
   if not token:
-    return "token inválido"
+    return False
   elif token_timestamp < datetime.datetime.utcnow():
-    return "token inválido"
+    return False
   else:
-    return "token válido"
+    return True
 
 def criar_usuario():
   body = request.get_json()
@@ -153,13 +153,14 @@ def auth_steam_delete():
   return {'mensagem': 'ID da Steam Deletado'}, 201
 
 def validar_usuario():
+  #TODO VALIDAR BODY
   body = request.get_json()
   logger.info(f"Chamada recebida com parâmetros {body.keys()}")
   email, data_nascimento = body['email'], body['data_nascimento']
   usuario = Usuario.query.filter_by(email=email).first()
   if not usuario:
     return {"Erro": "Email não cadastrado"}
-  elif str(usuario.data_nascimento) == data_nascimento and validar_token(usuario) == "token inválido":
+  elif str(usuario.data_nascimento) == data_nascimento and validar_token(usuario) == False:
     token_esqueci_senha = str(secrets.token_hex()) + str(
       datetime.datetime.timestamp(datetime.datetime.utcnow())).replace(".","")
 
@@ -167,23 +168,24 @@ def validar_usuario():
     usuario.token_valido_ate = datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
     usuario.salvar()
     return {"Token": f"{token_esqueci_senha}"}
-  elif str(usuario.data_nascimento) == data_nascimento and validar_token(usuario) == "token válido":
+  elif str(usuario.data_nascimento) == data_nascimento and validar_token(usuario) == True:
     return {"Token": f"{usuario.token_esqueci_senha}"}
   else:
     return {"Erro": "Usuário inválido"}
 
 def atualizar_senha():
+  #TODO VALIDAR BODY
   body = request.get_json()
   logger.info(f"Chamada recebida com parâmetros {body.keys()}")
   token_esqueci_senha = body['token_esqueci_senha']
   senha, confirmacao_senha = body['senha'], body['confirmacao_senha']
   usuario = Usuario.query.filter_by(token_esqueci_senha=token_esqueci_senha).first()
-  if not usuario or validar_token(usuario) == "token inválido":
+  if not usuario or validar_token(usuario) == False:
     return {"Erro": "Token inválido"}
   elif senha == confirmacao_senha:
     usuario.token_esqueci_senha = None
     usuario.token_valido_ate = None
-    usuario.salvar_atualizar_senha(senha)
+    usuario.salvar(senha)
     return {"Mensagem": "Senha alterada com sucesso"}
   else:
     return {"Erro": "Senha e confirmação de senha não coincidem"}
