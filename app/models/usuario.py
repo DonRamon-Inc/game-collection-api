@@ -14,7 +14,7 @@ class Usuario(db.Model):
   token_esqueci_senha = db.Column(db.String(255), nullable = True)
   token_valido_ate = db.Column(db.DateTime, nullable = True)
 
-  def __init__(self, nome, email, senha, data_nascimento, steam_id, token_esqueci_senha = None, token_valido_ate = None):
+  def __init__(self, nome, email, senha, data_nascimento, steam_id = None, token_esqueci_senha = None, token_valido_ate = None):
     self.nome = nome
     self.email = email
     self.senha = generate_password_hash(senha)
