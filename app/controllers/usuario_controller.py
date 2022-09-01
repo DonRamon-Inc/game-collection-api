@@ -6,6 +6,7 @@ import jwt
 import datetime
 import secrets
 from ..utils.logger import Logger
+import requests
 
 import re
 from flask import jsonify, request
@@ -185,3 +186,8 @@ def atualizar_senha():
     return {"Mensagem": "Senha alterada com sucesso"}
   else:
     return {"Erro": "Senha e confirmação de senha não coincidem"}
+
+def listar_jogos_steam():
+  #response = requests.get('https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/')
+  response = requests.get('http://viacep.com.br/ws/50110000/json/')
+  return (response.text)
