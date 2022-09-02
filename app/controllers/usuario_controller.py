@@ -146,7 +146,7 @@ def auth_steam(usuario):
 def auth_steam_delete(usuario):
   usuario.steam_id = None
   usuario.salvar()
-  return {'mensagem': 'ID da Steam deletado'}, 200
+  return '', 204
 
 def validar_usuario():
   #TODO VALIDAR BODY
