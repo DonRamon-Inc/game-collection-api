@@ -1,5 +1,5 @@
 from ..models.usuario import Usuario
-from ..views.usuario_view import serializar_usuario
+from ..views.usuario_view import serializar_jogos, serializar_usuario
 from .. import config
 from ..utils import auth
 import jwt
@@ -7,7 +7,7 @@ import datetime
 import secrets
 from ..utils.logger import Logger
 import requests
-
+import os
 import re
 from flask import jsonify, request
 
@@ -188,6 +188,8 @@ def atualizar_senha():
     return {"Erro": "Senha e confirmação de senha não coincidem"}
 
 def listar_jogos_steam():
-  #response = requests.get('https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/')
-  response = requests.get('http://viacep.com.br/ws/50110000/json/')
-  return (response.text)
+  headers = {"x-webapi-key": os.getenv("STEAM_API_KEY")}
+  parametros = {"steamid": os.getenv("STEAM_ID_TEST"), "include_appinfo": True}
+  resposta = requests.get('https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/', headers=headers, params=parametros)
+  return serializar_jogos(resposta.json())
+
