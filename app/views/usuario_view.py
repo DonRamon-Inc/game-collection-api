@@ -14,4 +14,4 @@ def serializar_jogos(resposta):
   return {
     "quantidade_jogos": quantidade_jogos,
     "jogos": jogos
-    }
+  }

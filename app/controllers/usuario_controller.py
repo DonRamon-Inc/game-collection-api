@@ -187,9 +187,20 @@ def atualizar_senha():
   else:
     return {"Erro": "Senha e confirmação de senha não coincidem"}
 
-def listar_jogos_steam():
+@auth.token_required
+def listar_jogos_steam(usuario):
+  if not usuario.steam_id:
+    return {"erro": "nenhuma conta da steam associada a este usuario"}, 400
   headers = {"x-webapi-key": os.getenv("STEAM_API_KEY")}
-  parametros = {"steamid": os.getenv("STEAM_ID_TEST"), "include_appinfo": True}
-  resposta = requests.get('https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/', headers=headers, params=parametros)
-  return serializar_jogos(resposta.json())
+  parametros = {
+    "steamid": usuario.steam_id,
+    "include_appinfo": True,
+    "include_played_free_games": True
+  }
+  resposta = requests.get(
+    'https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/',
+    headers=headers,
+    params=parametros
+  )
+  return serializar_jogos(resposta.json()), 200
 
