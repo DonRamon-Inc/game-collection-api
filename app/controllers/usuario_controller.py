@@ -7,7 +7,6 @@ import datetime
 import secrets
 from ..utils.logger import Logger
 import requests
-import os
 import re
 from flask import jsonify, request
 
@@ -191,7 +190,7 @@ def atualizar_senha():
 def listar_jogos_steam(usuario):
   if not usuario.steam_id:
     return {"erro": "nenhuma conta da steam associada a este usuario"}, 400
-  headers = {"x-webapi-key": os.getenv("STEAM_API_KEY")}
+  headers = {"x-webapi-key": config.STEAM_API_KEY}
   parametros = {
     "steamid": usuario.steam_id,
     "include_appinfo": True,
