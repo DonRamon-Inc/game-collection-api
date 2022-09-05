@@ -11,6 +11,7 @@ def serializar_jogos(resposta):
   jogos = []
   for game in resposta["response"]["games"]:
     jogos.append(game["name"])
+  jogos.sort()
   return {
     "quantidade_jogos": quantidade_jogos,
     "jogos": jogos
