@@ -156,7 +156,7 @@ def validar_usuario():
   email, data_nascimento = body['email'], body['data_nascimento']
   usuario = Usuario.query.filter_by(email=email).first()
   if not usuario:
-    return {"Erro": "Email não cadastrado"}
+    return {"erro": "email não cadastrado"}
   elif str(usuario.data_nascimento) == data_nascimento and validar_token(usuario) == False:
     token_esqueci_senha = str(secrets.token_hex()) + str(
       datetime.datetime.timestamp(datetime.datetime.utcnow())).replace(".","")
@@ -164,11 +164,11 @@ def validar_usuario():
     usuario.token_esqueci_senha = token_esqueci_senha
     usuario.token_valido_ate = datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
     usuario.salvar()
-    return {"Token": f"{token_esqueci_senha}"}
+    return {"token": f"{token_esqueci_senha}"}
   elif str(usuario.data_nascimento) == data_nascimento and validar_token(usuario) == True:
-    return {"Token": f"{usuario.token_esqueci_senha}"}
+    return {"token": f"{usuario.token_esqueci_senha}"}
   else:
-    return {"Erro": "Usuário inválido"}
+    return {"erro": "usuário inválido"}
 
 def atualizar_senha():
   #TODO VALIDAR BODY
@@ -178,14 +178,14 @@ def atualizar_senha():
   senha, confirmacao_senha = body['senha'], body['confirmacao_senha']
   usuario = Usuario.query.filter_by(token_esqueci_senha=token_esqueci_senha).first()
   if not usuario or validar_token(usuario) == False:
-    return {"Erro": "Token inválido"}
+    return {"erro": "token inválido"}
   elif senha == confirmacao_senha:
     usuario.token_esqueci_senha = None
     usuario.token_valido_ate = None
     usuario.salvar(senha)
-    return {"Mensagem": "Senha alterada com sucesso"}
+    return {"mensagem": "senha alterada com sucesso"}
   else:
-    return {"Erro": "Senha e confirmação de senha não coincidem"}
+    return {"erro": "senha e confirmação de senha não coincidem"}
 
 @auth.token_required
 def listar_jogos_steam(usuario):
