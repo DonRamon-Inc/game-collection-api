@@ -15,14 +15,14 @@ logger = Logger("UsuarioController")
 def detectar_e_retornar_erro(erro):
   erro = str(erro)
   erros_conhecidos = {
-    "psycopg2.OperationalError": ({"Erro": "Erro Interno"}, 500),
-    "NoneType": ({"Erro": "Usuário solicitado não existe"}, 400)
+    "psycopg2.OperationalError": ({"erro": "Erro Interno"}, 500),
+    "NoneType": ({"erro": "Usuário solicitado não existe"}, 400)
   }
   for key in erros_conhecidos.keys():
     if key in erro:
       return erros_conhecidos[key]
   print(erro)
-  return {"Erro": "Erro Interno"}, 500
+  return {"erro": "Erro Interno"}, 500
 
 def validar_parametros_obrigatorios(body, parametros_obrigatorios):
   parametros_vazios = []
@@ -73,7 +73,7 @@ def validar_data_nascimento(body):
 def validar_body(body, parametros_obrigatorios, validacoes=[]):
   campos_invalidos = validar_parametros_obrigatorios(body, parametros_obrigatorios)
   if campos_invalidos != []:
-    return {"Erro - Campos não preenchidos": campos_invalidos}
+    return {"erro": f"Campos não preenchidos: {campos_invalidos}"}
 
   validacoes_result = []
   for funcao_validadora in validacoes:
@@ -81,7 +81,7 @@ def validar_body(body, parametros_obrigatorios, validacoes=[]):
 
   erros_body = list(filter(None, validacoes_result))
   if erros_body:
-    return {"Erro": erros_body}
+    return {"erro": erros_body}
 
 def validar_token(usuario):
   token = usuario.token_esqueci_senha
