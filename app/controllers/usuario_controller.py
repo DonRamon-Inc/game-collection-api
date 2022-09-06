@@ -150,13 +150,15 @@ def auth_steam_delete(usuario):
   return '', 204
 
 def validar_usuario():
-  #TODO VALIDAR BODY
   body = request.get_json()
   logger.info(f"Chamada recebida com parâmetros {body.keys()}")
+  body_invalido = validar_body(body, ["email", "data_nascimento"], [validar_data_nascimento])
+  if body_invalido:
+    return jsonify(body_invalido), 400
   email, data_nascimento = body['email'], body['data_nascimento']
   usuario = Usuario.query.filter_by(email=email).first()
   if not usuario:
-    return {"erro": "email não cadastrado"}
+    return {"erro": "usuário inválido"}
   elif str(usuario.data_nascimento) == data_nascimento and validar_token(usuario) == False:
     token_esqueci_senha = str(secrets.token_hex()) + str(
       datetime.datetime.timestamp(datetime.datetime.utcnow())).replace(".","")
