@@ -27,8 +27,7 @@ def detectar_e_retornar_erro(erro):
 def validar_parametros_obrigatorios(body, parametros_obrigatorios):
   parametros_vazios = []
   for parametro in parametros_obrigatorios:
-    parametro_apenas = body[parametro].strip()
-    if (parametro not in body) or (parametro_apenas == ""):
+    if (parametro not in body) or (body[parametro] == ""):
       parametros_vazios.append(parametro)
   return parametros_vazios
 
