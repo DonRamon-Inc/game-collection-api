@@ -31,25 +31,21 @@ def validar_parametros_obrigatorios(body, parametros_obrigatorios):
       parametros_vazios.append(parametro)
   return parametros_vazios
 
-def validar_confirmacao_email(body):
-  if body["email"] != body["confirmacao_email"]:
-    return "Os emails informados não coincidem"
-
-def validar_confirmacao_senha(body):
-  if body["senha"] != body["confirmacao_senha"]:
-    return "As senhas informadas não coincidem"
-
 def validar_email(body):
   email = body["email"]
-  email_regex = r"^\w+@\w+\.\w+$"
+  email_regex = r"^[A-Za-z\d!@#$%&.+*\-\/<>?]+@\w+\.\w+.\w+$"
   if re.search(email_regex, email) == None:
-    return "Email não existe"
+    return "Email invalido, favor verificar email"
 
 def validar_email_duplicado(body):
   email = body["email"]
   email_valido = Usuario.query.filter_by(email = email).first()
   if email_valido:
     return "Email já cadastrado"
+
+def validar_confirmacao_email(body):
+  if body["email"] != body["confirmacao_email"]:
+    return "Os emails informados não coincidem"
 
 def validar_senha(body):
   senha = body["senha"]
@@ -59,6 +55,10 @@ def validar_senha(body):
   elif re.search(senha_regex,senha) == None:
     return ("Senha inválida. A senha precisa conter, oito ou mais caracteres "+
      "com uma combinação de letras, números e símbolos")
+
+def validar_confirmacao_senha(body):
+  if body["senha"] != body["confirmacao_senha"]:
+    return "As senhas informadas não coincidem"
 
 def validar_data_nascimento(body):
   data_nascimento = body["data_nascimento"]
@@ -152,8 +152,8 @@ def auth_steam_delete(usuario):
 def validar_usuario():
   body = request.get_json()
   logger.info(f"Chamada recebida com parâmetros {body.keys()}")
-  body_invalido = validar_body(body, 
-    ["email", "data_nascimento"], 
+  body_invalido = validar_body(body,
+    ["email", "data_nascimento"],
     [validar_data_nascimento]
   )
   if body_invalido:
@@ -177,7 +177,7 @@ def validar_usuario():
 
 def atualizar_senha():
   body = request.get_json()
-  body_invalido = validar_body(body, 
+  body_invalido = validar_body(body,
     ["token_esqueci_senha", "senha","confirmacao_senha"],
     [validar_senha,validar_confirmacao_senha]
   )
