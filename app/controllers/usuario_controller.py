@@ -157,7 +157,7 @@ def validar_usuario():
   email, data_nascimento = body['email'], body['data_nascimento']
   usuario = Usuario.query.filter_by(email=email).first()
   if not usuario:
-    return {"erro": "usuário inválido"}
+    return {"erro": "usuário inválido"}, 400
   elif str(usuario.data_nascimento) == data_nascimento and validar_token(usuario) == False:
     token_esqueci_senha = str(secrets.token_hex()) + str(
       datetime.datetime.timestamp(datetime.datetime.utcnow())).replace(".","")
@@ -165,11 +165,11 @@ def validar_usuario():
     usuario.token_esqueci_senha = token_esqueci_senha
     usuario.token_valido_ate = datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
     usuario.salvar()
-    return {"token": f"{token_esqueci_senha}"}
+    return {"token": f"{token_esqueci_senha}"}, 201
   elif str(usuario.data_nascimento) == data_nascimento and validar_token(usuario) == True:
-    return {"token": f"{usuario.token_esqueci_senha}"}
+    return {"token": f"{usuario.token_esqueci_senha}"}, 200
   else:
-    return {"erro": "usuário inválido"}
+    return {"erro": "usuário inválido"}, 400
 
 def atualizar_senha():
   body = request.get_json()
@@ -181,12 +181,12 @@ def atualizar_senha():
   senha = body['senha']
   usuario = Usuario.query.filter_by(token_esqueci_senha=token_esqueci_senha).first()
   if not usuario or validar_token(usuario) == False:
-    return {"erro": "token inválido"}
+    return {"erro": "token inválido"}, 400
   else:
     usuario.token_esqueci_senha = None
     usuario.token_valido_ate = None
     usuario.salvar(senha)
-    return {"mensagem": "senha alterada com sucesso"}
+    return {"mensagem": "senha alterada com sucesso"}, 201
 
 
 @auth.token_required
