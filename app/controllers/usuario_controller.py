@@ -172,21 +172,22 @@ def validar_usuario():
     return {"erro": "usuário inválido"}
 
 def atualizar_senha():
-  #TODO VALIDAR BODY
   body = request.get_json()
+  body_invalido = validar_body(body, ["token_esqueci_senha", "senha","confirmacao_senha"], [validar_senha,validar_confirmacao_senha])
+  if body_invalido:
+    return jsonify(body_invalido), 400
   logger.info(f"Chamada recebida com parâmetros {body.keys()}")
   token_esqueci_senha = body['token_esqueci_senha']
-  senha, confirmacao_senha = body['senha'], body['confirmacao_senha']
+  senha = body['senha']
   usuario = Usuario.query.filter_by(token_esqueci_senha=token_esqueci_senha).first()
   if not usuario or validar_token(usuario) == False:
     return {"erro": "token inválido"}
-  elif senha == confirmacao_senha:
+  else:
     usuario.token_esqueci_senha = None
     usuario.token_valido_ate = None
     usuario.salvar(senha)
     return {"mensagem": "senha alterada com sucesso"}
-  else:
-    return {"erro": "senha e confirmação de senha não coincidem"}
+
 
 @auth.token_required
 def listar_jogos_steam(usuario):
