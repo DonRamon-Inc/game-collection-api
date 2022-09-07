@@ -53,10 +53,12 @@ def validar_email_duplicado(body):
 
 def validar_senha(body):
   senha = body["senha"]
-  senha_regex = r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
-  if re.search(senha_regex,senha) == None:
-    return ("Senha inválida. A senha precisa conter, no mínimo, 8 caracteres,"+
-     " 1 letra e 1 número.")
+  senha_regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#^?&])[A-Za-z\d@$!#%*?&]{8,}$"
+  if len(senha) > 100:
+    return('Senha inválida. Use 100 caracteres ou menos para sua senha')
+  elif re.search(senha_regex,senha) == None:
+    return ("Senha inválida. A senha precisa conter, oito ou mais caracteres "+
+     "com uma combinação de letras, números e símbolos")
 
 def validar_data_nascimento(body):
   data_nascimento = body["data_nascimento"]
