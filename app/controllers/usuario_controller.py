@@ -112,7 +112,7 @@ def criar_usuario():
 def logar_usuario():
   body = request.get_json()
   body_invalido = validar_body(body,["email","senha"],
-  [validar_email,validar_senha])
+  [validar_email])
   if body_invalido:
     return jsonify(body_invalido),400
 
