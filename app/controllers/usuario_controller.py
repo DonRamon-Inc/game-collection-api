@@ -151,7 +151,10 @@ def auth_steam_delete(usuario):
 def validar_usuario():
   body = request.get_json()
   logger.info(f"Chamada recebida com parâmetros {body.keys()}")
-  body_invalido = validar_body(body, ["email", "data_nascimento"], [validar_data_nascimento])
+  body_invalido = validar_body(body, 
+    ["email", "data_nascimento"], 
+    [validar_data_nascimento]
+  )
   if body_invalido:
     return jsonify(body_invalido), 400
   email, data_nascimento = body['email'], body['data_nascimento']
@@ -173,7 +176,10 @@ def validar_usuario():
 
 def atualizar_senha():
   body = request.get_json()
-  body_invalido = validar_body(body, ["token_esqueci_senha", "senha","confirmacao_senha"], [validar_senha,validar_confirmacao_senha])
+  body_invalido = validar_body(body, 
+    ["token_esqueci_senha", "senha","confirmacao_senha"],
+    [validar_senha,validar_confirmacao_senha]
+  )
   if body_invalido:
     return jsonify(body_invalido), 400
   logger.info(f"Chamada recebida com parâmetros {body.keys()}")
