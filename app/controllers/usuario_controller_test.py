@@ -1,6 +1,8 @@
 import secrets
 import mock
 import pytest
+import jwt
+
 from freezegun import freeze_time
 from . import usuario_controller as uc
 from..models import usuario
@@ -62,3 +64,30 @@ def test_validar_body():
     uc.validar_parametros_obrigatorios.assert_called_once_with(body,parametros_obrigatorios)
     validar_email.assert_called_once_with(body)
     validar_senha.assert_called_once_with(body)
+
+def test_auth_steam():
+  body = {
+  "id" : '137',
+  "steam_id": 'teste1'
+  }
+
+  request = mock.NonCallableMock(get_json=mock.Mock(return_value=body), headers=mock.NonCallableMock(get=mock.Mock(return_value='a b')))
+  jwt.get_unverified_header = mock.Mock(return_value={'alg':''})
+
+  salvar_mock = mock.Mock()
+
+  jwt.decode = mock.Mock(return_value={'sub':body['id']})
+  usuario_mock = mock.NonCallableMock(id=body['id'],steam_id='teste2',salvar=salvar_mock)
+
+  uc.validar_body = mock.Mock(return_value=None)
+
+  filter_by_result = mock.NonCallableMock(one=mock.Mock(return_value=usuario_mock))
+  usuario.Usuario = mock.NonCallableMock(query=mock.Mock(filter_by=mock.Mock(return_value=filter_by_result)))
+
+  resposta = uc.auth_steam(request)
+
+  assert resposta[0] ==  {'mensagem': 'ID da Steam registrado'}
+  assert resposta[1] == 200
+  assert usuario_mock.steam_id == body['steam_id']
+  usuario_mock.salvar.assert_called_once()
+
