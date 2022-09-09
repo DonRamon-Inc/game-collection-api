@@ -31,3 +31,20 @@ def test_esqueci_senha():
     )
     uc.validar_token.assert_called_once_with(usuario_mock)
     secrets.token_hex.assert_called_once()
+
+
+def test_validar_body():
+    uc.validar_parametros_obrigatorios = mock.Mock(return_value=[])
+
+    validar_email = mock.Mock(return_value=None)
+    validar_senha = mock.Mock(return_value=None)
+
+    parametros_obrigatorios = ["nome","senha","email"]
+
+    body = {
+        "nome":"Ramon Cos",
+        "senha":"123123",
+        "email":"123456.com"
+    }
+
+    uc.validar_body(body,parametros_obrigatorios,[validar_email,validar_senha])
