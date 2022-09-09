@@ -1,6 +1,12 @@
 from flask import request
 from .controllers import usuario_controller
 
+def auth_steam():
+  return usuario_controller.auth_steam(request=request)
+
+def auth_steam_delete():
+  return usuario_controller.auth_steam_delete(request=request)
+
 def validar_usuario():
     return usuario_controller.validar_usuario(request)
 
@@ -9,10 +15,10 @@ def declarar_rotas(app):
 
     app.add_url_rule("/login", methods=["POST"], view_func=usuario_controller.logar_usuario)
 
-    app.add_url_rule("/authSteam", methods=["POST"], view_func=usuario_controller.auth_steam)
+    app.add_url_rule("/authSteam", methods=["POST"], view_func=auth_steam)
 
     app.add_url_rule(
-      "/authSteam", methods=["DELETE"], view_func=usuario_controller.auth_steam_delete
+      "/authSteam", methods=["DELETE"], view_func=auth_steam_delete
     )
 
     app.add_url_rule(

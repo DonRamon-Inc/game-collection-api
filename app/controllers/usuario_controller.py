@@ -138,7 +138,7 @@ def logar_usuario():
     return {'token' : token_autenticacao}
 
 @auth.token_required
-def auth_steam(usuario):
+def auth_steam(request, usuario):
     body = request.get_json()
     logger.info(f"Chamada recebida com parâmetros {body}")
     body_invalido = validar_body(body,["steam_id"])
@@ -150,7 +150,7 @@ def auth_steam(usuario):
     return {'mensagem': 'ID da Steam registrado'}, 200
 
 @auth.token_required
-def auth_steam_delete(usuario):
+def auth_steam_delete(request, usuario):
     usuario.steam_id = None
     usuario.salvar()
     return '', 204
