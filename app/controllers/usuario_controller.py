@@ -195,7 +195,6 @@ def atualizar_senha():
     usuario.salvar(senha)
     return {"mensagem": "senha alterada com sucesso"}, 201
 
-
 @auth.token_required
 def listar_jogos_steam(usuario):
   if not usuario.steam_id:
@@ -213,3 +212,17 @@ def listar_jogos_steam(usuario):
   )
   return serializar_jogos(resposta.json()), 200
 
+@auth.token_required
+def pesquisar_jogos_steam(usuario):
+  body = request.get_json()
+  jogos = listar_jogos_steam(usuario)[0]
+  body_invalido = validar_body(body,["busca"])
+  if body_invalido:
+    return jsonify(body_invalido), 400
+  busca = body["busca"].lower()
+  jogos_filtrados = []
+  for jogo in jogos["jogos"]:
+    if busca in jogo.lower():
+      jogos_filtrados.append(jogo)
+  return jsonify(jogos_filtrados), 200
+  
