@@ -6,7 +6,7 @@ import jwt
 import requests
 from flask import jsonify, request
 
-from ..models.usuario import Usuario
+from ..models import usuario as u
 from ..views.usuario_view import serializar_jogos, serializar_usuario
 from .. import config
 from ..utils import auth
@@ -30,7 +30,7 @@ def validar_email(body):
 
 def validar_email_duplicado(body):
     email = body["email"]
-    email_valido = Usuario.query.filter_by(email = email).first()
+    email_valido = u.Usuario.query.filter_by(email = email).first()
     if email_valido:
         return "Email já cadastrado"
     return None
@@ -125,7 +125,7 @@ def logar_usuario():
         return jsonify(body_invalido),400
 
     email, senha = body['email'], body["senha"]
-    usuario = Usuario.query.filter_by(email=email).first()
+    usuario = u.Usuario.query.filter_by(email=email).first()
     if not usuario or not usuario.verificar_senha(senha):
         return {'mensagem': 'Email ou Senha não confere'}, 400
 
@@ -155,7 +155,7 @@ def auth_steam_delete(usuario):
     usuario.salvar()
     return '', 204
 
-def validar_usuario():
+def validar_usuario(request):
     body = request.get_json()
     logger.info(f"Chamada recebida com parâmetros {body.keys()}")
     body_invalido = validar_body(body,
@@ -165,7 +165,7 @@ def validar_usuario():
     if body_invalido:
         return jsonify(body_invalido), 400
     email, data_nascimento = body['email'], body['data_nascimento']
-    usuario = Usuario.query.filter_by(email=email).first()
+    usuario = u.Usuario.query.filter_by(email=email).first()
     if not usuario:
         return {"erro": "usuário inválido"}, 400
     if str(usuario.data_nascimento) == data_nascimento and validar_token(usuario) is False:
@@ -191,7 +191,7 @@ def atualizar_senha():
     logger.info(f"Chamada recebida com parâmetros {body.keys()}")
     token_esqueci_senha = body['token_esqueci_senha']
     senha = body['senha']
-    usuario = Usuario.query.filter_by(token_esqueci_senha=token_esqueci_senha).first()
+    usuario = u.Usuario.query.filter_by(token_esqueci_senha=token_esqueci_senha).first()
     if not usuario or validar_token(usuario) is False:
         return {"erro": "token inválido"}, 400
     usuario.token_esqueci_senha = None
