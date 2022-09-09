@@ -1,7 +1,7 @@
 import secrets
 import mock
 from freezegun import freeze_time
-from . import usuario_controller as uc
+from . import uc as uc
 from..models import usuario
 
 @freeze_time("2022-08-09")
@@ -48,3 +48,8 @@ def test_validar_body():
     }
 
     uc.validar_body(body,parametros_obrigatorios,[validar_email,validar_senha])
+    resposta = uc.validar_body(body,parametros_obrigatorios,[validar_email,validar_senha])
+    assert resposta == None
+    uc.validar_parametros_obrigatorios.assert_called_once_with(body,parametros_obrigatorios)
+    validar_email.assert_called_once_with(body)
+    validar_senha.assert_called_once_with(body)
