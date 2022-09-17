@@ -15,6 +15,8 @@ class Usuario(db.Model):
     token_esqueci_senha = db.Column(db.String(255), nullable = True)
     token_valido_ate = db.Column(db.DateTime, nullable = True)
 
+    senha_alterada = False
+
     def __init__(self, usuario_dicionario):
         self.nome = usuario_dicionario.get("nome").strip()
         self.email = usuario_dicionario.get("email")
@@ -27,15 +29,11 @@ class Usuario(db.Model):
     def verificar_senha(self, senha):
         return check_password_hash(self.senha, senha)
 
-    def salvar(self, senha = None):
-        if senha is not None:
-            logger.info(f"Salvando a alteração de senha do usuário {self.email}")
-            self.senha = generate_password_hash(senha)
-            db.session.add(self)
-            db.session.commit()
-            logger.info(f"Senha do usuário {self.email} alterada com sucesso")
-        else:
-            logger.info(f"Salvando usuário {self.email}")
-            db.session.add(self)
-            db.session.commit()
-            logger.info(f"Usuário {self.email} salvo com sucesso")
+    def salvar(self):
+        logger.info(f"Salvando usuário {self.email}")
+        if self.senha_alterada:
+            self.senha_alterada = False
+            self.senha = generate_password_hash(self.senha)
+        db.session.add(self)
+        db.session.commit()
+        logger.info(f"Usuário {self.email} salvo com sucesso")

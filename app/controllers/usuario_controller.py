@@ -37,16 +37,19 @@ def validar_email(body):
     email_regex = r"^[A-Za-z\d!@#$%&.+*\-\/<>?]+@\w+\.\w+.\w+$"
     if re.search(email_regex, email) is None:
         return "Email invalido, favor verificar email"
+    return None
 
 def validar_email_duplicado(body):
     email = body["email"]
     email_valido = Usuario.query.filter_by(email = email).first()
     if email_valido:
         return "Email já cadastrado"
+    return None
 
 def validar_confirmacao_email(body):
     if body["email"] != body["confirmacao_email"]:
         return "Os emails informados não coincidem"
+    return None
 
 def validar_senha(body):
     senha = body["senha"]
@@ -56,10 +59,12 @@ def validar_senha(body):
     if re.search(senha_regex,senha) is None:
         return "Senha inválida. A senha precisa conter, oito ou mais caracteres " +\
           "com uma combinação de letras, números e símbolos"
+    return None
 
 def validar_confirmacao_senha(body):
     if body["senha"] != body["confirmacao_senha"]:
         return "As senhas informadas não coincidem"
+    return None
 
 def validar_data_nascimento(body):
     data_nascimento = body["data_nascimento"]
@@ -69,12 +74,15 @@ def validar_data_nascimento(body):
             return "É preciso ter mais de 13 anos para criar uma conta."
     except ValueError:
         return "Formato de data inválido"
+    return None
 
-def validar_body(body, parametros_obrigatorios, validacoes=[]):
+def validar_body(body, parametros_obrigatorios, validacoes=None):
     campos_invalidos = validar_parametros_obrigatorios(body, parametros_obrigatorios)
     if campos_invalidos:
         return {"erro": f"Campos não preenchidos: {campos_invalidos}"}
 
+    if not validacoes:
+        return None
     validacoes_result = []
     for funcao_validadora in validacoes:
         validacoes_result.append(funcao_validadora(body))
@@ -82,6 +90,7 @@ def validar_body(body, parametros_obrigatorios, validacoes=[]):
     erros_body = list(filter(None, validacoes_result))
     if erros_body:
         return {"erro": erros_body}
+    return None
 
 def validar_token(usuario):
     token = usuario.token_esqueci_senha
@@ -95,10 +104,18 @@ def validar_token(usuario):
 def criar_usuario():
     body = request.get_json()
     logger.info(f"Chamada recebida com parâmetros {body.keys()}")
-    body_invalido = validar_body(body,
-    ["nome", "email", "confirmacao_email", "senha", "confirmacao_senha", "data_nascimento"],
-    [validar_confirmacao_email,validar_confirmacao_senha,validar_data_nascimento,validar_email,
-    validar_email_duplicado,validar_senha])
+    body_invalido = validar_body(
+      body,
+      ["nome", "email", "confirmacao_email", "senha", "confirmacao_senha", "data_nascimento"],
+      [
+        validar_confirmacao_email,
+        validar_confirmacao_senha,
+        validar_data_nascimento,
+        validar_email,
+        validar_email_duplicado,
+        validar_senha
+      ]
+    )
     if body_invalido:
         return jsonify(body_invalido), 400
     try:
@@ -192,7 +209,9 @@ def atualizar_senha():
         return {"erro": "token inválido"}, 400
     usuario.token_esqueci_senha = None
     usuario.token_valido_ate = None
-    usuario.salvar(senha)
+    usuario.senha = senha
+    usuario.senha_alterada = True
+    usuario.salvar()
     return {"mensagem": "senha alterada com sucesso"}, 201
 
 
