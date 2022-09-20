@@ -108,7 +108,7 @@ def criar_usuario():
     if body_invalido:
         return jsonify(body_invalido), 400
 
-    usuario = Usuario({
+    usuario = u.Usuario({
       "nome": body["nome"],
       "email": body["email"],
       "senha": body["senha"],
