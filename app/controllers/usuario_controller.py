@@ -14,17 +14,6 @@ from ..utils.logger import Logger
 
 logger = Logger("UsuarioController")
 
-def detectar_e_retornar_erro(erro):
-    erro = str(erro)
-    erros_conhecidos = {
-      "psycopg2.OperationalError": ({"erro": "Erro Interno"}, 500),
-      "NoneType": ({"erro": "Usuário solicitado não existe"}, 400)
-    }
-    for key, value in erros_conhecidos.items():
-        if key in erro:
-            return value
-    return {"erro": "Erro Interno"}, 500
-
 def validar_parametros_obrigatorios(body, parametros_obrigatorios):
     parametros_vazios = []
     for parametro in parametros_obrigatorios:
@@ -118,17 +107,15 @@ def criar_usuario():
     )
     if body_invalido:
         return jsonify(body_invalido), 400
-    try:
-        usuario = Usuario({
-          "nome": body["nome"],
-          "email": body["email"],
-          "senha": body["senha"],
-          "data_nascimento": body["data_nascimento"]
-        })
-        usuario.salvar()
-        return serializar_usuario(usuario), 201
-    except Exception as exception:
-        return detectar_e_retornar_erro(exception)
+
+    usuario = Usuario({
+      "nome": body["nome"],
+      "email": body["email"],
+      "senha": body["senha"],
+      "data_nascimento": body["data_nascimento"]
+    })
+    usuario.salvar()
+    return serializar_usuario(usuario), 201
 
 def logar_usuario():
     body = request.get_json()
