@@ -2,10 +2,10 @@ from flask import request
 from .controllers import usuario_controller
 
 def auth_steam():
-  return usuario_controller.auth_steam(request=request)
+    return usuario_controller.auth_steam(request=request)
 
 def auth_steam_delete():
-  return usuario_controller.auth_steam_delete(request=request)
+    return usuario_controller.auth_steam_delete(request=request)
 
 def validar_usuario():
     return usuario_controller.validar_usuario(request)

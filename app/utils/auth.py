@@ -1,6 +1,5 @@
 from functools import wraps
 from sqlalchemy import exc as sql_exc
-from flask import request
 import jwt
 
 from ..models import usuario as u
@@ -21,7 +20,7 @@ def token_required(function):
             )
             usuario_atual = u.Usuario.query.filter_by(id=dados_usuario['sub']).one()
         except (jwt.DecodeError, sql_exc.NoResultFound):
-                return {'mensagem': 'Token invalido'}, 401
+            return {'mensagem': 'Token invalido'}, 401
 
         return function(request, usuario_atual)
     return decorated
