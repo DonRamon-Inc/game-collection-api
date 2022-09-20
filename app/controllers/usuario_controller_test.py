@@ -66,28 +66,35 @@ def test_validar_body():
     validar_senha.assert_called_once_with(body)
 
 def test_auth_steam():
-  body = {
-  "id" : '137',
-  "steam_id": 'teste1'
-  }
+    body = {
+        "id" : '137',
+        "steam_id": 'teste1'
+    }
 
-  request = mock.NonCallableMock(get_json=mock.Mock(return_value=body), headers=mock.NonCallableMock(get=mock.Mock(return_value='a b')))
-  jwt.get_unverified_header = mock.Mock(return_value={'alg':''})
+    request = mock.NonCallableMock(
+        get_json=mock.Mock(return_value=body),
+        headers=mock.NonCallableMock(get=mock.Mock(return_value='a b'))
+    )
 
-  salvar_mock = mock.Mock()
+    jwt.get_unverified_header = mock.Mock(return_value={'alg':''})
 
-  jwt.decode = mock.Mock(return_value={'sub':body['id']})
-  usuario_mock = mock.NonCallableMock(id=body['id'],steam_id='teste2',salvar=salvar_mock)
+    salvar_mock = mock.Mock()
 
-  uc.validar_body = mock.Mock(return_value=None)
+    jwt.decode = mock.Mock(return_value={'sub':body['id']})
+    usuario_mock = mock.NonCallableMock(id=body['id'],steam_id='teste2',salvar=salvar_mock)
 
-  filter_by_result = mock.NonCallableMock(one=mock.Mock(return_value=usuario_mock))
-  usuario.Usuario = mock.NonCallableMock(query=mock.Mock(filter_by=mock.Mock(return_value=filter_by_result)))
+    uc.validar_body = mock.Mock(return_value=None)
 
-  resposta = uc.auth_steam(request)
+    filter_by_result = mock.NonCallableMock(one=mock.Mock(return_value=usuario_mock))
+    usuario.Usuario = mock.NonCallableMock(
+        query=mock.Mock(filter_by=mock.Mock(return_value=filter_by_result))
+    )
 
-  assert resposta[0] ==  {'mensagem': 'ID da Steam registrado'}
-  assert resposta[1] == 200
-  assert usuario_mock.steam_id == body['steam_id']
-  usuario_mock.salvar.assert_called_once()
+    resposta = uc.auth_steam(request)
+
+    assert resposta[0] ==  {'mensagem': 'ID da Steam registrado'}
+    assert resposta[1] == 200
+    assert usuario_mock.steam_id == body['steam_id']
+    usuario_mock.salvar.assert_called_once()
+
 
