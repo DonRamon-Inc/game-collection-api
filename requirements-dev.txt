@@ -1,2 +1,3 @@
 -r requirements-test.txt
 python-githooks==1.0.7
+pylint==2.15.3
