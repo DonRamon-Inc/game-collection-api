@@ -1,7 +1,8 @@
 from functools import wraps
-from flask import request
 from sqlalchemy import exc as sql_exc
+from flask import request
 import jwt
+
 from ..models import usuario as u
 from .. import config
 
