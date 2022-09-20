@@ -96,3 +96,4 @@ def test_auth_steam():
     assert resposta[1] == 200
     assert usuario_mock.steam_id == body['steam_id']
     usuario_mock.salvar.assert_called_once()
+    

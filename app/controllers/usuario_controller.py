@@ -150,7 +150,7 @@ def auth_steam(request, usuario):
     return {'mensagem': 'ID da Steam registrado'}, 200
 
 @auth.token_required
-def auth_steam_delete(request, usuario):
+def auth_steam_delete(_request, usuario):
     usuario.steam_id = None
     usuario.salvar()
     return '', 204
