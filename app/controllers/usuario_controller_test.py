@@ -11,7 +11,11 @@ from..models import usuario
 def pre_testes():
     validar_body = uc.validar_body
     validar_parametros_obrigatorios = uc.validar_parametros_obrigatorios
+    jwt_decode = jwt.decode
+    jwt_get_unverified_header = jwt.get_unverified_header
     yield
+    jwt.decode = jwt_decode
+    jwt.get_unverified_header = jwt_get_unverified_header
     uc.validar_body = validar_body
     uc.validar_parametros_obrigatorios=validar_parametros_obrigatorios
 
