@@ -1,7 +1,7 @@
 import os
 import dotenv
 
-from .app.app import iniciar_app
+from app.app import iniciar_app
 
 dotenv.load_dotenv()
 app = iniciar_app()
