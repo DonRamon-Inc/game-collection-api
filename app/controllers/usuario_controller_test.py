@@ -1,8 +1,22 @@
 import secrets
 import mock
+import pytest
 from freezegun import freeze_time
-from . import uc as uc
+from . import usuario_controller as uc
 from..models import usuario
+
+@pytest.fixture(autouse=True)
+def pre_testes():
+    validar_body = uc.validar_body
+    validar_parametros_obrigatorios = uc.validar_parametros_obrigatorios
+    validar_senha = uc.validar_senha
+    validar_email = uc.validar_email
+    yield
+    uc.validar_body = validar_body
+    uc.validar_parametros_obrigatorios=validar_parametros_obrigatorios
+    uc.validar_senha = validar_senha
+    uc.validar_email = validar_email
+
 
 @freeze_time("2022-08-09")
 def test_esqueci_senha():
@@ -47,7 +61,6 @@ def test_validar_body():
         "email":"123456.com"
     }
 
-    uc.validar_body(body,parametros_obrigatorios,[validar_email,validar_senha])
     resposta = uc.validar_body(body,parametros_obrigatorios,[validar_email,validar_senha])
     assert resposta == None
     uc.validar_parametros_obrigatorios.assert_called_once_with(body,parametros_obrigatorios)
