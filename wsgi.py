@@ -1,9 +1,7 @@
 import os
-import dotenv
 
 from app.app import iniciar_app
 
-dotenv.load_dotenv()
 app = iniciar_app()
 
 port = int(os.getenv('PORT', '5000'))
