@@ -16,7 +16,7 @@ def listar_jogos_steam(contexto):
       "include_played_free_games": True
     }
     resposta = requests.get(
-      'https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/',
+      f'{config.STEAM_API_URL}/IPlayerService/GetOwnedGames/v1/',
       headers=headers,
       params=parametros,
       timeout=15
