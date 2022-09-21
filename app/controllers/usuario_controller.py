@@ -138,8 +138,9 @@ def logar_usuario():
     return {'token' : token_autenticacao}
 
 @auth.token_required
-def auth_steam(request, usuario):
-    body = request.get_json()
+def auth_steam(contexto):
+    usuario = contexto['usuario']
+    body = contexto['request'].get_json()
     logger.info(f"Chamada recebida com parâmetros {body}")
     body_invalido = validar_body(body,["steam_id"])
     if body_invalido:
@@ -150,17 +151,18 @@ def auth_steam(request, usuario):
     return {'mensagem': 'ID da Steam registrado'}, 200
 
 @auth.token_required
-def auth_steam_delete(_request, usuario):
+def auth_steam_delete(contexto):
+    usuario = contexto['usuario']
     usuario.steam_id = None
     usuario.salvar()
     return '', 204
 
-def validar_usuario(request):
-    body = request.get_json()
+def validar_usuario(contexto):
+    body = contexto['request'].get_json()
     logger.info(f"Chamada recebida com parâmetros {body.keys()}")
     body_invalido = validar_body(body,
-      ["email", "data_nascimento"],
-      [validar_data_nascimento]
+        ["email", "data_nascimento"],
+        [validar_data_nascimento]
     )
     if body_invalido:
         return jsonify(body_invalido), 400
@@ -183,8 +185,8 @@ def validar_usuario(request):
 def atualizar_senha():
     body = request.get_json()
     body_invalido = validar_body(body,
-      ["token_esqueci_senha", "senha","confirmacao_senha"],
-      [validar_senha,validar_confirmacao_senha]
+        ["token_esqueci_senha", "senha","confirmacao_senha"],
+        [validar_senha,validar_confirmacao_senha]
     )
     if body_invalido:
         return jsonify(body_invalido), 400
