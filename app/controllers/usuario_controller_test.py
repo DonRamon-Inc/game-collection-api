@@ -62,7 +62,7 @@ def test_validar_body():
     }
 
     resposta = uc.validar_body(body,parametros_obrigatorios,[validar_email,validar_senha])
-    assert resposta == None
+    assert resposta is None
     uc.validar_parametros_obrigatorios.assert_called_once_with(body,parametros_obrigatorios)
     validar_email.assert_called_once_with(body)
     validar_senha.assert_called_once_with(body)
