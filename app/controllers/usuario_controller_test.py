@@ -9,13 +9,9 @@ from..models import usuario
 def pre_testes():
     validar_body = uc.validar_body
     validar_parametros_obrigatorios = uc.validar_parametros_obrigatorios
-    validar_senha = uc.validar_senha
-    validar_email = uc.validar_email
     yield
     uc.validar_body = validar_body
     uc.validar_parametros_obrigatorios=validar_parametros_obrigatorios
-    uc.validar_senha = validar_senha
-    uc.validar_email = validar_email
 
 
 @freeze_time("2022-08-09")
