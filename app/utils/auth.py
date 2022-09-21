@@ -7,7 +7,8 @@ from .. import config
 
 def token_required(function):
     @wraps(function)
-    def decorated(request):
+    def decorated(contexto):
+        request = contexto['request']
         token_autenticacao = request.headers.get('Authorization').split()[-1]
         dados_header = jwt.get_unverified_header(token_autenticacao)
 
@@ -19,8 +20,9 @@ def token_required(function):
               token_autenticacao, config.SECRET_KEY, algorithms=[dados_header['alg']]
             )
             usuario_atual = u.Usuario.query.filter_by(id=dados_usuario['sub']).one()
+            contexto['usuario'] = usuario_atual
         except (jwt.DecodeError, sql_exc.NoResultFound):
             return {'mensagem': 'Token invalido'}, 401
 
-        return function(request, usuario_atual)
+        return function(contexto)
     return decorated
