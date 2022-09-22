@@ -22,3 +22,30 @@ def listar_jogos_steam(contexto):
       timeout=15
     )
     return serializar_jogos(resposta.json()), 200
+
+@auth.token_required
+def detalhes_jogo(contexto):
+
+    jogo_id = contexto["jogo_id"]
+
+    parametros_request = {
+      "appids": jogo_id,
+      "cc":"br",
+      "l":"brazilian"
+    }
+
+    resposta = requests.get(
+      f"{config.STEAM_STORE_URL}/api/appdetails", params= parametros_request, timeout=15).json()
+
+    detalhes = {
+      "jogo_id":resposta[str(jogo_id)]["data"]["steam_appid"],
+      "nome": resposta[str(jogo_id)]["data"]["name"],
+      "descricao": resposta[str(jogo_id)]["data"]["short_description"],
+      "capa": resposta[str(jogo_id)]["data"]["header_image"],
+      "preco_atual": resposta[str(jogo_id)]["data"]["price_overview"]["final_formatted"],
+      "preco_base": resposta[str(jogo_id)]["data"]["price_overview"]["initial_formatted"],
+      "desconto": resposta[str(jogo_id)]["data"]["price_overview"]["discount_percent"]
+    }
+
+    return (detalhes, 200)
+    
