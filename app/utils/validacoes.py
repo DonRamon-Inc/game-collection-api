@@ -31,20 +31,25 @@ def validar_confirmacao_email(body):
 
 def validar_senha(body):
     senha = body["senha"]
-    senha_regex_letra_minuscula = r"[a-z]"
-    senha_regex_letra_maiuscula = r"[A-Z]"
-    senha_regex_numeros = r"\d"
-    senha_regex_caractere_especial = r"[!@#$%&\+\-_*\/=\\\s'`~´:?<>.,;{}()[\]]"
-
-    if 8 > len(senha) < 100:
+    if not 8 < len(senha) < 100:
         return 'Senha inválida. Sua senha deve conter entre 8 a 100 caracteres'
-    if re.search(senha_regex_numeros,senha) is not None:
-        if re.search(senha_regex_letra_minuscula,senha) is not None:
-            if re.search(senha_regex_letra_maiuscula,senha) is not None:
-                if re.search(senha_regex_caractere_especial,senha) is not None:
-                    return None
-    return "Senha inválida. A senha precisa conter, oito ou mais caracteres " +\
-        "com uma combinação de letras, números e símbolos"
+
+    regex_letra_minuscula = r"[a-z]"
+    regex_letra_maiuscula = r"[A-Z]"
+    regex_numeros = r"\d"
+    regex_caractere_especial = r"[!@#$%&\+\-_*\/=\\\s'`~´:?<>.,;{}()[\]]"
+    senha_regex = [
+        regex_numeros,
+        regex_letra_maiuscula,
+        regex_letra_minuscula,
+        regex_caractere_especial
+    ]
+
+    for regex in senha_regex:
+        if re.search(regex, senha) is None:
+            return "Senha inválida. A senha precisa conter, oito ou mais caracteres " +\
+                "com uma combinação de letras, números e símbolos"
+    return None
 
 def validar_confirmacao_senha(body):
     if body["senha"] != body["confirmacao_senha"]:
