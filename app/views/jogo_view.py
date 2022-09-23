@@ -7,15 +7,20 @@ def serializar_jogos(resposta):
       "jogos": jogos
     }
 
-def serializar_detalhes_jogo(resposta, jogo_id):
+def serializar_detalhes_jogo(resposta, jogo_id, usuario_possui):
 
-    return {
+    detalhes = {
       "jogo_id":resposta[jogo_id]["data"]["steam_appid"],
       "nome": resposta[jogo_id]["data"]["name"],
       "descricao": resposta[jogo_id]["data"]["short_description"],
       "capa": resposta[jogo_id]["data"]["header_image"],
       "preco_atual": resposta[jogo_id]["data"]["price_overview"]["final_formatted"],
       "preco_base": resposta[jogo_id]["data"]["price_overview"]["initial_formatted"],
-      "desconto": resposta[jogo_id]["data"]["price_overview"]["discount_percent"]
+      "desconto": resposta[jogo_id]["data"]["price_overview"]["discount_percent"],
+      "usuario_possui":usuario_possui
     }
+    if detalhes["desconto"] == 0:
+        detalhes["preco_base"] = detalhes["preco_atual"]
+
+    return detalhes
     
