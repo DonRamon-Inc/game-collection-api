@@ -32,7 +32,7 @@ def validar_confirmacao_email(body):
 def validar_senha(body):
     senha = body["senha"]
     if not 8 < len(senha) < 100:
-        return 'Senha inválida. Sua senha deve conter entre 8 a 100 caracteres'
+        return "Senha inválida. Sua senha deve conter entre 8 a 100 caracteres"
 
     regex_letra_minuscula = r"[a-z]"
     regex_letra_maiuscula = r"[A-Z]"
