@@ -30,14 +30,20 @@ def test_validar_body():
     validar_senha.assert_called_once_with(body)
 
 def test_validar_email_deve_aceitar_email_valido():
-    email_comum = 'EmailComum@email.com'
-    email_comum_com_dominio_de_regiao = 'EmailComum@email.com.br'
+    email_comum_curto = 'email@email.com'
+    email_comum_longo = 'EmailComum@emailcomum.com'
+    email_comum_com_codigo_de_pais = 'EmailComum@email.com.br'
     email_comum_com_caractere_especial = 'Ema!l.Co+mum@email.com.br'
     email_comum_com_caractere_especial_e_numero = 'Ema!l.C0+mum@email.com.br'
+    email_estrangeiro = 'email@comum.co'
+    email_estrangeiro_com_codigo_de_pais = 'email@comum.co.uk'
     emails_validos = [
-        email_comum,
-        email_comum_com_dominio_de_regiao,
+        email_estrangeiro,
+        email_comum_curto,
+        email_comum_longo,
+        email_comum_com_codigo_de_pais,
         email_comum_com_caractere_especial,
+        email_estrangeiro_com_codigo_de_pais,
         email_comum_com_caractere_especial_e_numero
     ]
 
@@ -48,16 +54,18 @@ def test_validar_email_deve_aceitar_email_valido():
         assert resposta is None
 
 def test_validar_email_deve_rejeitar_email_incompleto():
+    email_incompleto_sem_dominio = 'Email.Comum@'
+    email_incompleto_sem_dominio_de_topo = 'Email.Comum@email'
+    email_incompleto_encerrando_com_ponto = 'Email.Comum@email.'
     email_incompleto_dominio_de_topo_incompleto = 'Email.Comum@email.c'
     email_incompleto_codigo_do_pais_incompleto = 'Email.Comum@email.com.b'
-    email_incompleto_sem_dominio_de_topo = 'Email.Comum@email'
-    email_incompleto_sem_dominio = 'Email.Comum@'
 
     emails_invalidos = [
-        email_incompleto_dominio_de_topo_incompleto,
-        email_incompleto_codigo_do_pais_incompleto,
+        email_incompleto_sem_dominio,
         email_incompleto_sem_dominio_de_topo,
-        email_incompleto_sem_dominio
+        email_incompleto_encerrando_com_ponto,
+        email_incompleto_dominio_de_topo_incompleto,
+        email_incompleto_codigo_do_pais_incompleto
     ]
 
     for email in emails_invalidos:
@@ -67,11 +75,25 @@ def test_validar_email_deve_rejeitar_email_incompleto():
         assert resposta == "Email invalido, favor verificar email"
 
 def test_validar_email_deve_rejeitar_email_encerrando_com_ponto():
-    email_encerrando_com_ponto = 'Email.Comum@email.'
     email_encerrando_com_ponto = 'Email.Comum@email.com.'
+    email_encerrando_com_ponto_apos_email_completo = 'Email.Comum@email.com.br.'
     emails_invalidos = [
         email_encerrando_com_ponto,
-        email_encerrando_com_ponto
+        email_encerrando_com_ponto_apos_email_completo
+    ]
+
+    for email in emails_invalidos:
+        body = {'email' : email}
+        resposta = val.validar_email(body)
+
+    assert resposta == "Email invalido, favor verificar email"
+
+def test_validar_email_deve_rejeitar_email_com_dois_ou_mais_arroba():
+    email_com_dois_ou_mais_arroba = 'Email@Comum@email.com.br'
+    email_com_mais_de_dois_ou_mais_arroba = 'Email@Co@mum@email.com.br'
+    emails_invalidos = [
+        email_com_dois_ou_mais_arroba,
+        email_com_mais_de_dois_ou_mais_arroba
     ]
 
     for email in emails_invalidos:
@@ -80,12 +102,19 @@ def test_validar_email_deve_rejeitar_email_encerrando_com_ponto():
 
         assert resposta == "Email invalido, favor verificar email"
 
-def test_validar_email_deve_rejeitar_email_com_dois_ou_mais_arroba():
-    email_com_dois_ou_mais_arroba = 'Email@Comum@email.com.br'
-    body = {'email' : email_com_dois_ou_mais_arroba}
-    resposta = val.validar_email(body)
+def test_validar_email_deve_rejeitar_email_com_dois_ou_mais_caracteres_juntos():
+    email_com_dois_caracteres_juntos = 'Email+-Comum@email.com.br'
+    email_com_mais_de_dois_caractere_juntos = 'E!.-mailComum@email.com.br'
+    emails_invalidos = [
+        email_com_dois_caracteres_juntos,
+        email_com_mais_de_dois_caractere_juntos
+    ]
 
-    assert resposta == "Email invalido, favor verificar email"
+    for email in emails_invalidos:
+        body = {'email' : email}
+        resposta = val.validar_email(body)
+
+        assert resposta == "Email invalido, favor verificar email"
 
 def test_validar_email_deve_rejeitar_email_sem_conteudo_antes_do_arroba():
     email_sem_conteudo_antes_do_arroba = '@email.com.br'
@@ -107,20 +136,6 @@ def test_validar_email_deve_rejeitar_email_sem_dominio():
     resposta = val.validar_email(body)
 
     assert resposta == "Email invalido, favor verificar email"
-
-def test_validar_tamanho_da_senha():
-    senha_abaixo_de_oito_caracteres = 'S3nh@'
-    senha_acima_de_cem_caracteres = 'SenhaP3rfeit@' * 10
-    body_senhas = [
-        senha_abaixo_de_oito_caracteres,
-        senha_acima_de_cem_caracteres,
-    ]
-
-    for senha in body_senhas:
-        body = {'senha' : senha}
-        erro = val.validar_senha(body)
-
-        assert erro == "Senha inválida. Sua senha deve conter entre 8 a 100 caracteres"
 
 def test_validar_senha_deve_aceitar_senha_que_cumpre_requisitos():
     senha_que_cumpre_requisitos = 'Senh@P3rfeita'
