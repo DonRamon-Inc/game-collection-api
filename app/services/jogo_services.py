@@ -1,6 +1,6 @@
 import requests
 
-from ..views.jogo_view import serializar_jogos, serializar_detalhes_jogo
+from ..views import jogo_view as jv
 from ..utils import auth
 from .. import config
 
@@ -27,7 +27,7 @@ def lista_jogos(contexto, info_extra=True):
 def listar_jogos_steam(contexto):
     resposta = lista_jogos(contexto)
 
-    return serializar_jogos(resposta), 200
+    return jv.serializar_jogos(resposta), 200
 
 
 @auth.token_required
@@ -50,4 +50,4 @@ def detalhes_jogo(contexto):
             usuario_possui = True
             break
 
-    return (serializar_detalhes_jogo(resposta, str(jogo_id), usuario_possui), 200)
+    return (jv.serializar_detalhes_jogo(resposta, str(jogo_id), usuario_possui), 200)
