@@ -51,3 +51,8 @@ def detalhes_jogo(contexto):
             break
 
     return (jv.serializar_detalhes_jogo(resposta, str(jogo_id), usuario_possui), 200)
+    return serializar_jogos(resposta.json()), 200
+
+def favoritar_jogo(contexto):
+    contexto = {}
+    pass
