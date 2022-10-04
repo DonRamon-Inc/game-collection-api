@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_migrate import Migrate
 
 from .models.db import db
 from .rotas import declarar_rotas
@@ -9,6 +10,7 @@ def iniciar_app():
 
     configurar_app(app)
     db.init_app(app)
+    Migrate(app, db)
     declarar_rotas(app)
 
     return app

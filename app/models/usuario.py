@@ -2,6 +2,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from .db import db
 from ..utils.logger import Logger
+from .jogo_favorito_usuario import jogo_favorito_usuario
 
 logger = Logger("UsuarioModel")
 
@@ -14,6 +15,9 @@ class Usuario(db.Model):
     steam_id = db.Column(db.String(80), nullable = True)
     token_esqueci_senha = db.Column(db.String(255), nullable = True)
     token_valido_ate = db.Column(db.DateTime, nullable = True)
+    jogos_favoritos = db.relationship(
+        "JogoFavorito", secondary=jogo_favorito_usuario, backref="usuarios"
+    )
 
     senha_alterada = False
 

@@ -22,3 +22,7 @@ def listar_jogos_steam(contexto):
       timeout=15
     )
     return serializar_jogos(resposta.json()), 200
+
+def favoritar_jogo(contexto):
+    contexto = {}
+    pass
