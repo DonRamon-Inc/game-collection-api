@@ -27,3 +27,5 @@ def declarar_rotas(app):
     app.add_url_rule(
       "/jogo/<id_jogo>", methods=["GET"], view_func=jc.detalhes_jogo_steam
     )
+
+    app.add_url_rule("/favoritar_jogo", methods=["POST"], view_func=jc.favoritar_jogo)
