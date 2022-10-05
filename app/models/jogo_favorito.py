@@ -7,7 +7,7 @@ class JogoFavorito(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     nome = db.Column(db.String(80), nullable = False)
     steam_id_jogo = db.Column(db.String(50), nullable = False)
-    url_capa = db.Column(db.String(50), nullable = False)
+    url_capa = db.Column(db.String(200), nullable = False)
 
     def __init__(self, jogo_favorito_dicionario):
         self.nome = jogo_favorito_dicionario.get("nome")

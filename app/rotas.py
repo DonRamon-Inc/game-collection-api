@@ -25,5 +25,5 @@ def declarar_rotas(app):
     )
 
     app.add_url_rule(
-        "/favoritar_jogo", methods=["POST"], view_func=jc.favoritar_jogo
+        "/favoritar_jogo/<id_jogo>", methods=["POST"], view_func=jc.favoritar_jogo
     )
