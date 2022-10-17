@@ -9,3 +9,6 @@ def detalhes_jogo_steam(id_jogo):
 
 def favoritar_jogo(id_jogo):
     return js.favoritar_jogo(contexto = {'request': request, 'id_jogo': id_jogo})
+
+def desfavoritar_jogo(id_jogo):
+    return js.desfavoritar_jogo(contexto = {'request': request, 'id_jogo': id_jogo})

@@ -28,4 +28,10 @@ def declarar_rotas(app):
       "/jogo/<id_jogo>", methods=["GET"], view_func=jc.detalhes_jogo_steam
     )
 
-    app.add_url_rule("/favoritar_jogo/<id_jogo>", methods=["POST"], view_func=jc.favoritar_jogo)
+    app.add_url_rule(
+        "/favoritar_jogo/<id_jogo>", methods=["POST"], view_func=jc.favoritar_jogo
+    )
+
+    app.add_url_rule(
+        "/desfavoritar_jogo/<id_jogo>", methods=["POST"], view_func=jc.desfavoritar_jogo
+    )
