@@ -53,7 +53,7 @@ def detalhes_jogo(contexto):
             break
 
     return (jv.serializar_detalhes_jogo(resposta, str(jogo_id), usuario_possui), 200)
-    return serializar_jogos(resposta.json()), 200
+    #return serializar_jogos(resposta.json()), 200
 
 @auth.token_required
 def favoritar_jogo(contexto):
@@ -84,3 +84,13 @@ def favoritar_jogo(contexto):
 
 
     return {"mensagem": "jogo favoritado com sucesso"}, 201
+
+@auth.token_required
+def desfavoritar_jogo(contexto):
+    usuario_atual = contexto["usuario"]
+    id_jogo = str(contexto["id_jogo"])
+    jogo = jf.JogoFavorito.query.filter_by(steam_id_jogo=id_jogo).first()
+    usuario_atual.jogos_favoritos.remove(jogo)
+    db.db.session.commit()
+
+    return {"mensagem": "jogo desfavoritado com sucesso"}, 202
