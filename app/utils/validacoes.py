@@ -10,6 +10,31 @@ def validar_parametros_obrigatorios(body, parametros_obrigatorios):
             parametros_vazios.append(parametro)
     return parametros_vazios
 
+def validar_limite_de_caracteres(body):
+    limites = {
+        "nome":80,
+        "email":100,
+        "confirmacao_email":100,
+        "senha":100,
+        "confirmacao_senha":100,
+        "steam_id":80,
+        "data_nascimento":10
+    }
+
+    campos_longos = []
+    for campo in body:
+        if len(str(body[campo])) > limites[campo]:
+            campos_longos.append(campo)
+    if campos_longos:
+        return f"campos com caracteres em excesso: {campos_longos}"
+    return None
+
+def validar_excesso_espacamento_nome(body):
+    regex_excesso_espacos = r"\s{2,}"
+    if re.findall(regex_excesso_espacos, body["nome"]):
+        body["nome"] = re.sub(regex_excesso_espacos,' ',body["nome"])
+    return body
+
 def validar_email(body):
     email = body["email"]
     email_regex = r"^\w+([\.!#$%&'*\/=?^_+\-`{|}~]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
@@ -69,8 +94,11 @@ def validar_data_nascimento(body):
 def validar_body(body, parametros_obrigatorios, validacoes=None):
     campos_invalidos = validar_parametros_obrigatorios(body, parametros_obrigatorios)
     if campos_invalidos:
-        return {"erro": f"Campos não preenchidos: {campos_invalidos}"}
-
+        return {"erro": f"campos não preenchidos: {campos_invalidos}"}
+    body = validar_excesso_espacamento_nome(body)
+    # campos_longos = validar_limite_de_caracteres(body)
+    # if campos_longos:
+    #     return {"erro":f"campos excederam limite de caracteres: {campos_longos}"}
     if not validacoes:
         return None
     validacoes_result = []

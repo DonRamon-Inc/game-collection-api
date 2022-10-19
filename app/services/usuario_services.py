@@ -25,7 +25,8 @@ def criar_usuario(contexto):
         val.validar_data_nascimento,
         val.validar_email,
         val.validar_email_duplicado,
-        val.validar_senha
+        val.validar_senha,
+        val.validar_limite_de_caracteres,
       ]
     )
     if body_invalido:
