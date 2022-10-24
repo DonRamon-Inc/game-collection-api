@@ -15,18 +15,25 @@ logger = Logger("UsuarioController")
 
 def criar_usuario(contexto):
     body = contexto["request"].get_json()
+    body = val.validar_excesso_espacamento_nome(body)
     logger.info(f"Chamada recebida com parâmetros {body.keys()}")
     body_invalido = val.validar_body(
       body,
-      ["nome", "email", "confirmacao_email", "senha", "confirmacao_senha", "data_nascimento"],
+      {
+        "nome":80,
+        "email":100,
+        "confirmacao_email":100,
+        "senha":100,
+        "confirmacao_senha":100,
+        "data_nascimento":10
+      },
       [
         val.validar_confirmacao_email,
         val.validar_confirmacao_senha,
         val.validar_data_nascimento,
         val.validar_email,
         val.validar_email_duplicado,
-        val.validar_senha,
-        val.validar_limite_de_caracteres,
+        val.validar_senha
       ]
     )
     if body_invalido:
@@ -43,7 +50,7 @@ def criar_usuario(contexto):
 
 def logar_usuario(contexto):
     body = contexto["request"].get_json()
-    body_invalido = val.validar_body(body,["email","senha"],
+    body_invalido = val.validar_body(body,{"email":100,"senha":100},
     [val.validar_email])
     if body_invalido:
         return jsonify(body_invalido),400
@@ -66,7 +73,7 @@ def auth_steam(contexto):
     usuario = contexto['usuario']
     body = contexto['request'].get_json()
     logger.info(f"Chamada recebida com parâmetros {body}")
-    body_invalido = val.validar_body(body,["steam_id"])
+    body_invalido = val.validar_body(body,{"steam_id":50})
     if body_invalido:
         return jsonify(body_invalido), 400
     steam_id = body["steam_id"]
@@ -85,7 +92,7 @@ def validar_usuario(contexto):
     body = contexto['request'].get_json()
     logger.info(f"Chamada recebida com parâmetros {body.keys()}")
     body_invalido = val.validar_body(body,
-        ["email", "data_nascimento"],
+        {"email":100, "data_nascimento":10},
         [val.validar_data_nascimento]
     )
     if body_invalido:
@@ -109,7 +116,7 @@ def validar_usuario(contexto):
 def atualizar_senha(contexto):
     body = contexto["request"].get_json()
     body_invalido = val.validar_body(body,
-        ["token_esqueci_senha", "senha","confirmacao_senha"],
+        {"token_esqueci_senha":100, "senha":100,"confirmacao_senha":100},
         [val.validar_senha,val.validar_confirmacao_senha]
     )
     if body_invalido:
