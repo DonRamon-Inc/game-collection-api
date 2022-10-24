@@ -85,7 +85,6 @@ def validar_body(body, parametros_obrigatorios, validacoes=None):
     campos_invalidos = validar_parametros_obrigatorios(body, parametros_obrigatorios.keys())
     if campos_invalidos:
         return {"erro": f"campos não preenchidos: {campos_invalidos}"}
-        
     campos_longos = validar_limite_de_caracteres(body,parametros_obrigatorios)
     if campos_longos:
         return {"erro":f"limite de caracteres excedido em: {campos_longos}"}

@@ -45,7 +45,7 @@ def test_esqueci_senha():
 
     assert resposta == ({"token": "token"+"16600032000"}, 201)
     val.validar_body.assert_called_once_with(body,
-        ["email", "data_nascimento"],
+        {"email":100, "data_nascimento":10},
         [val.validar_data_nascimento]
     )
     val.validar_token.assert_called_once_with(usuario_mock)
