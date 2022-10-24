@@ -15,7 +15,7 @@ def test_validar_body():
     validar_email = mock.Mock(return_value=None)
     validar_senha = mock.Mock(return_value=None)
 
-    parametros_obrigatorios = ["nome","senha","email"]
+    parametros_obrigatorios = {"nome":80,"senha":100,"email":100}
 
     body = {
         "nome":"Ramon Cos",
@@ -25,7 +25,7 @@ def test_validar_body():
 
     resposta = val.validar_body(body,parametros_obrigatorios,[validar_email,validar_senha])
     assert resposta is None
-    val.validar_parametros_obrigatorios.assert_called_once_with(body,parametros_obrigatorios)
+    val.validar_parametros_obrigatorios.assert_called_once_with(body,parametros_obrigatorios.keys())
     validar_email.assert_called_once_with(body)
     validar_senha.assert_called_once_with(body)
 
