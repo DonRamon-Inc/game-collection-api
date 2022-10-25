@@ -18,7 +18,7 @@ class Usuario(db.Model):
     senha_alterada = False
 
     def __init__(self, usuario_dicionario):
-        self.nome = usuario_dicionario.get("nome").strip()
+        self.nome = usuario_dicionario.get("nome")
         self.email = usuario_dicionario.get("email")
         self.senha = generate_password_hash(usuario_dicionario.get("senha"))
         self.data_nascimento = usuario_dicionario.get("data_nascimento")
