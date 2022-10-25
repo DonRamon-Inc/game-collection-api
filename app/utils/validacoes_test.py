@@ -189,3 +189,73 @@ def test_validar_senha_deve_rejeitar_senha_sem_caractere_especial():
 
     assert erro == "Senha inválida. A senha precisa conter, oito ou mais caracteres " +\
                 "com uma combinação de letras, números e símbolos"
+
+def test_validar_limite_de_caracteres_retorna_none_caso_nao_hajam_erros():
+    body_correto = {
+        "nome": "TesteTamanho 3",
+        "email": "testetamanho@gmail.com",
+        "confirmacao_email": "testetamanho@gmail.com",
+        "senha": "Eugostodebatat@1",
+        "confirmacao_senha": "Eugostodebatat@1",
+        "data_nascimento": "1998-11-01"
+    }
+
+    limites = {
+        "nome":80,
+        "email":100,
+        "confirmacao_email":100,
+        "senha":100,
+        "confirmacao_senha":100
+    }
+    limites["data_nascimento"]=10
+
+    erro = val.validar_limite_de_caracteres(body_correto,limites)
+
+    assert erro is None
+
+def test_validar_limite_de_caracteres_deve_rejeitar_body_com_dados_longos():
+    body_muito_longo = {
+        "nome": "Campo com excesso de caracteres propositalmente"*2,
+        "email": "testetamanho1230@gmail.com"*10,
+        "confirmacao_email": "testetamanho1230@gmail.com"*10,
+        "senha": "Eugostodebatat@1"*10,
+        "confirmacao_senha": "Eugostodebatat@1"*10,
+        "data_nascimento": "1998-11-01"*2
+    }
+
+    limites = {
+        "nome":80,
+        "email":100,
+        "confirmacao_email":100,
+        "senha":100,
+        "confirmacao_senha":100
+    }
+    limites["data_nascimento"]=10
+
+    lista_de_excedentes = val.validar_limite_de_caracteres(body_muito_longo,limites)
+
+    assert lista_de_excedentes == [
+        "nome",
+        "email",
+        "confirmacao_email",
+        "senha",
+        "confirmacao_senha",
+        "data_nascimento"
+    ]
+
+def test_validar_excesso_espacamento_nome_nao_deve_alterar_campo_sem_espacos_em_excesso():
+    campo_inicial = "Nome sem excesso de espaços"
+    body = {"nome":campo_inicial}
+
+    resposta = val.validar_excesso_espacamento_nome(body)
+
+    assert resposta["nome"] == campo_inicial
+
+def test_validar_excesso_espacamento_nome_deve_retirar_espacos_em_excesso():
+    body = {
+        "nome":"  Nome   com     excesso     de     espaços  em diversos    locais    "
+    }
+
+    body_com_nome_ajustado = val.validar_excesso_espacamento_nome(body)
+
+    assert body_com_nome_ajustado["nome"] == "Nome com excesso de espaços em diversos locais"
