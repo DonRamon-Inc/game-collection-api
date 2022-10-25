@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 
 from .models.db import db
 from .rotas import declarar_rotas
@@ -8,6 +9,7 @@ def iniciar_app():
     app = Flask(__name__)
 
     configurar_app(app)
+    CORS(app)
     db.init_app(app)
     declarar_rotas(app)
 
