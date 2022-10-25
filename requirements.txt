@@ -5,3 +5,4 @@ psycopg2-binary==2.9.3
 python-dotenv==0.20.0
 PyJWT==2.4.0
 requests==2.28.1
+flask-cors==3.0.10
