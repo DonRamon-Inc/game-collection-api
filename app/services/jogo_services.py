@@ -59,8 +59,8 @@ def detalhes_jogo(contexto):
 def favoritar_jogo(contexto):
     usuario_atual = contexto["usuario"]
     id_jogo = str(contexto["id_jogo"])
-    jogo = {}
-    if not jf.JogoFavorito.query.filter_by(steam_id_jogo=id_jogo).first():
+    jogo = jf.JogoFavorito.query.filter_by(steam_id_jogo=id_jogo).first()
+    if not jogo:
         resposta = requests.get(
             f'{config.STEAM_STORE_URL}/api/appdetails', params = {
                 "appids": id_jogo,
@@ -75,9 +75,6 @@ def favoritar_jogo(contexto):
             "url_capa": resposta[id_jogo]["data"]["header_image"]
         })
         jogo.salvar()
-    else:
-        jogo = jf.JogoFavorito.query.filter_by(steam_id_jogo=id_jogo).first()
-
 
     usuario_atual.jogos_favoritos.append(jogo)
     db.db.session.commit()
