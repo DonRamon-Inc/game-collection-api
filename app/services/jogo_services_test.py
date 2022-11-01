@@ -214,3 +214,32 @@ def test_favorita_jogo_se_ele_ja_esta_no_banco_de_dados():
     usuario_atual.jogos_favoritos.append.assert_called_once_with(
         novo_jogo_favorito
     )
+
+def test_desfavoritar_jogo():
+    usuario_atual = mock_token_required_decorator()
+    id_jogo = "500"
+    jogo_favorito = {'jogo_favorito': 'jogo'}
+    query_filter_mock = mock.NonCallableMock(first=mock.Mock(return_value=jogo_favorito))
+    jf.JogoFavorito = mock.Mock(
+        return_value = jogo_favorito,
+        query = mock.NonCallableMock(
+            filter_by = mock.Mock(return_value=query_filter_mock)
+        )
+    )
+
+    db.db = mock.NonCallableMock(
+        session = mock.NonCallableMock(commit = mock.Mock())
+    )
+
+    contexto={"request":create_mock_request(),"id_jogo":id_jogo}
+    retorno = js.desfavoritar_jogo(contexto)
+
+    assert retorno == ({"mensagem": "jogo desfavoritado com sucesso"}, 202)
+
+    jf.JogoFavorito.query.filter_by.assert_called_once_with(
+        steam_id_jogo = id_jogo
+    )
+
+    usuario_atual.jogos_favoritos.remove.assert_called_once_with(
+        jogo_favorito
+    )
