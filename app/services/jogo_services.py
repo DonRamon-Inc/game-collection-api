@@ -17,7 +17,7 @@ def lista_jogos(contexto, info_extra=True):
       "include_played_free_games": True
     }
     resposta = requests.get(
-      f'{config.STEAM_API_URL}/IPlayerService/GetOwnedGames/v1/',
+      f"{config.STEAM_API_URL}/IPlayerService/GetOwnedGames/v1/",
       headers=headers,
       params=parametros,
       timeout=15
@@ -62,7 +62,7 @@ def favoritar_jogo(contexto):
     jogo = jf.JogoFavorito.query.filter_by(steam_id_jogo=id_jogo).first()
     if not jogo:
         resposta = requests.get(
-            f'{config.STEAM_STORE_URL}/api/appdetails', params = {
+            f"{config.STEAM_STORE_URL}/api/appdetails", params = {
                 "appids": id_jogo,
                 "cc": "br",
                 "filters": "basic"

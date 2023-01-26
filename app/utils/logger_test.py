@@ -24,7 +24,7 @@ def test_logger_info_deve_chamar_funcao_imprimir_log(logger_instancia):
     resposta = logger_instancia.info(mensagem)
 
     assert resposta is None
-    logger_instancia._imprimir_log.assert_called_once_with('INFO', mensagem)
+    logger_instancia._imprimir_log.assert_called_once_with("INFO", mensagem)
 
 def test_logger_warning_deve_chamar_funcao_imprimir_log(logger_instancia):
     mensagem = "hello world"
@@ -33,7 +33,7 @@ def test_logger_warning_deve_chamar_funcao_imprimir_log(logger_instancia):
     resposta = logger_instancia.warning(mensagem)
 
     assert resposta is None
-    logger_instancia._imprimir_log.assert_called_once_with('WARNING', mensagem)
+    logger_instancia._imprimir_log.assert_called_once_with("WARNING", mensagem)
 
 def test_logger_error_deve_chamar_funcao_imprimir_log(logger_instancia):
     mensagem = "hello world"
@@ -42,7 +42,7 @@ def test_logger_error_deve_chamar_funcao_imprimir_log(logger_instancia):
     resposta = logger_instancia.error(mensagem)
 
     assert resposta is None
-    logger_instancia._imprimir_log.assert_called_once_with('ERROR', mensagem)
+    logger_instancia._imprimir_log.assert_called_once_with("ERROR", mensagem)
 
 @freeze_time("2022-09-09")
 def test_imprimir_log_deve_imprimir_mensagem_severidade_e_timestamp_do_log(logger_instancia):

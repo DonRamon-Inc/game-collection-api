@@ -18,5 +18,5 @@ def iniciar_app():
     return app
 
 def configurar_app(app):
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = config.DATABASE_URL
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
+    app.config["SQLALCHEMY_DATABASE_URI"] = config.DATABASE_URL

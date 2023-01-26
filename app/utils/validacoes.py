@@ -23,7 +23,7 @@ def validar_excesso_espacamento_nome(body):
     body["nome"] = body["nome"].strip()
     regex_excesso_espacos = r"\s{2,}"
     if re.findall(regex_excesso_espacos, body["nome"]):
-        body["nome"] = re.sub(regex_excesso_espacos,' ',body["nome"])
+        body["nome"] = re.sub(regex_excesso_espacos," ",body["nome"])
     return body
 
 def validar_email(body):

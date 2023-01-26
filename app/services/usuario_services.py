@@ -55,23 +55,23 @@ def logar_usuario(contexto):
     if body_invalido:
         return jsonify(body_invalido),400
 
-    email, senha = body['email'], body["senha"]
+    email, senha = body["email"], body["senha"]
     usuario = u.Usuario.query.filter_by(email=email).first()
     if not usuario or not usuario.verificar_senha(senha):
-        return {'mensagem': 'Email ou Senha não confere'}, 400
+        return {"mensagem": "Email ou Senha não confere"}, 400
 
     token_autenticacao = jwt.encode({
-      'sub' : usuario.id,
-      'user' : usuario.nome,
-      'iat' : datetime.datetime.utcnow(),
-      'exp' :  datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+      "sub" : usuario.id,
+      "user" : usuario.nome,
+      "iat" : datetime.datetime.utcnow(),
+      "exp" :  datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
     }, config.SECRET_KEY)
-    return {'token' : token_autenticacao}
+    return {"token" : token_autenticacao}
 
 @auth.token_required
 def auth_steam(contexto):
-    usuario = contexto['usuario']
-    body = contexto['request'].get_json()
+    usuario = contexto["usuario"]
+    body = contexto["request"].get_json()
     logger.info(f"Chamada recebida com parâmetros {body}")
     body_invalido = val.validar_body(body,{"steam_id":50})
     if body_invalido:
@@ -79,17 +79,17 @@ def auth_steam(contexto):
     steam_id = body["steam_id"]
     usuario.steam_id = steam_id
     usuario.salvar()
-    return {'mensagem': 'ID da Steam registrado'}, 200
+    return {"mensagem": "ID da Steam registrado"}, 200
 
 @auth.token_required
 def auth_steam_delete(contexto):
-    usuario = contexto['usuario']
+    usuario = contexto["usuario"]
     usuario.steam_id = None
     usuario.salvar()
-    return '', 204
+    return "", 204
 
 def validar_usuario(contexto):
-    body = contexto['request'].get_json()
+    body = contexto["request"].get_json()
     logger.info(f"Chamada recebida com parâmetros {body.keys()}")
     body_invalido = val.validar_body(body,
         {"email":100, "data_nascimento":10},
@@ -97,7 +97,7 @@ def validar_usuario(contexto):
     )
     if body_invalido:
         return jsonify(body_invalido), 400
-    email, data_nascimento = body['email'], body['data_nascimento']
+    email, data_nascimento = body["email"], body["data_nascimento"]
     usuario = u.Usuario.query.filter_by(email=email).first()
     if not usuario:
         return {"erro": "usuário inválido"}, 400
@@ -122,8 +122,8 @@ def atualizar_senha(contexto):
     if body_invalido:
         return jsonify(body_invalido), 400
     logger.info(f"Chamada recebida com parâmetros {body.keys()}")
-    token_esqueci_senha = body['token_esqueci_senha']
-    senha = body['senha']
+    token_esqueci_senha = body["token_esqueci_senha"]
+    senha = body["senha"]
     usuario = u.Usuario.query.filter_by(token_esqueci_senha=token_esqueci_senha).first()
     if not usuario or val.validar_token(usuario) is False:
         return {"erro": "token inválido"}, 400
