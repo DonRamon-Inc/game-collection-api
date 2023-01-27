@@ -40,4 +40,4 @@ class Usuario(db.Model):
             self.senha = generate_password_hash(self.senha)
         db.session.add(self)
         db.session.commit()
-        logger.info(f"usuário {self.email} salvo com sucesso")
+        logger.info(f"usuario {self.email} salvo com sucesso")
