@@ -19,9 +19,9 @@ def token_required(function):
             usuario_atual = u.Usuario.query.filter_by(id=dados_usuario["sub"]).one()
             contexto["usuario"] = usuario_atual
         except (jwt.DecodeError, sql_exc.NoResultFound, ValueError):
-            return {"mensagem": "Token invalido"}, 401
+            return {"mensagem": "token invalido"}, 401
         except AttributeError:
-            return {"mensagem": "Token não definido"}, 401
+            return {"mensagem": "token nao definido"}, 401
         else:
             return function(contexto)
     return decorated

@@ -30,19 +30,19 @@ def validar_email(body):
     email = body["email"]
     email_regex = r"^\w+([\.!#$%&'*\/=?^_+\-`{|}~]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
     if re.search(email_regex, email) is None:
-        return "Email invalido, favor verificar email"
+        return "email invalido, favor verificar email"
     return None
 
 def validar_email_duplicado(body):
     email = body["email"]
     email_valido = u.Usuario.query.filter_by(email = email).first()
     if email_valido:
-        return "Email já cadastrado"
+        return "email ja cadastrado"
     return None
 
 def validar_confirmacao_email(body):
     if body["email"] != body["confirmacao_email"]:
-        return "Os emails informados não coincidem"
+        return "os emails informados nao coincidem"
     return None
 
 def validar_senha(body):
@@ -63,13 +63,13 @@ def validar_senha(body):
 
     for regex in senha_regex:
         if re.search(regex, senha) is None:
-            return "Senha inválida. A senha precisa conter, oito ou mais caracteres " +\
-                "com uma combinação de letras, números e símbolos"
+            return "senha invalida. a senha precisa conter, oito ou mais caracteres " +\
+                "com uma combinação de letras, numeros e simbolos"
     return None
 
 def validar_confirmacao_senha(body):
     if body["senha"] != body["confirmacao_senha"]:
-        return "As senhas informadas não coincidem"
+        return "as senhas informadas nao coincidem"
     return None
 
 def validar_data_nascimento(body):
@@ -77,15 +77,15 @@ def validar_data_nascimento(body):
     try:
         data_formatada = datetime.strptime(data_nascimento, r"%Y-%m-%d")
         if data_formatada.year > (datetime.now().year - 13):
-            return "É preciso ter mais de 13 anos para criar uma conta."
+            return "e preciso ter mais de 13 anos para criar uma conta."
     except ValueError:
-        return "Formato de data inválido"
+        return "formato de data invalido"
     return None
 
 def validar_body(body, parametros_obrigatorios, validacoes=None):
     campos_invalidos = validar_parametros_obrigatorios(body, parametros_obrigatorios.keys())
     if campos_invalidos:
-        return {"erro": f"campos não preenchidos: {campos_invalidos}"}
+        return {"erro": f"campos nao preenchidos: {campos_invalidos}"}
     campos_longos = validar_limite_de_caracteres(body,parametros_obrigatorios)
     if campos_longos:
         return {"erro":f"limite de caracteres excedido em: {campos_longos}"}

@@ -16,7 +16,7 @@ class JogoFavorito(db.Model):
 
 
     def salvar(self):
-        logger.info(f"Salvando jogo favorito {self.nome}")
+        logger.info(f"salvando jogo favorito {self.nome}")
         db.session.add(self)
         db.session.commit()
-        logger.info(f"Jogo favorito {self.nome} salvo com sucesso")
+        logger.info(f"jogo favorito {self.nome} salvo com sucesso")

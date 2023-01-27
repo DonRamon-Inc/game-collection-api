@@ -34,10 +34,10 @@ class Usuario(db.Model):
         return check_password_hash(self.senha, senha)
 
     def salvar(self):
-        logger.info(f"Salvando usuário {self.email}")
+        logger.info(f"salvando usuario {self.email}")
         if self.senha_alterada:
             self.senha_alterada = False
             self.senha = generate_password_hash(self.senha)
         db.session.add(self)
         db.session.commit()
-        logger.info(f"Usuário {self.email} salvo com sucesso")
+        logger.info(f"usuário {self.email} salvo com sucesso")
