@@ -63,7 +63,7 @@ def test_token_required_retorna_erro_caso_usuario_nao_seja_encontrado():
 
     resposta = mock_function({"request": mock_request})
 
-    assert resposta == ({"mensagem": "Token invalido"}, 401)
+    assert resposta == ({"mensagem": "token invalido"}, 401)
 
 def test_token_required_retorna_erro_caso_token_nao_possa_ser_decodificado():
     @auth.token_required
@@ -76,7 +76,7 @@ def test_token_required_retorna_erro_caso_token_nao_possa_ser_decodificado():
 
     resposta = mock_function({"request": mock_request})
 
-    assert resposta == ({"mensagem": "Token invalido"}, 401)
+    assert resposta == ({"mensagem": "token invalido"}, 401)
 
 def test_token_required_retorna_erro_caso_token_nao_venha_no_cabecalho():
     @auth.token_required
@@ -88,7 +88,7 @@ def test_token_required_retorna_erro_caso_token_nao_venha_no_cabecalho():
 
     resposta = mock_function({"request": mock_request})
 
-    assert resposta == ({"mensagem": "Token invalido"}, 401)
+    assert resposta == ({"mensagem": "token invalido"}, 401)
 
 def test_token_required_retorna_erro_caso_token_nao_seja_definido_no_cabecalho():
     @auth.token_required
@@ -100,4 +100,4 @@ def test_token_required_retorna_erro_caso_token_nao_seja_definido_no_cabecalho()
 
     resposta = mock_function({"request": mock_request})
 
-    assert resposta == ({"mensagem": "Token não definido"}, 401)
+    assert resposta == ({"mensagem": "token nao definido"}, 401)

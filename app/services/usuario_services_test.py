@@ -78,7 +78,7 @@ def test_auth_steam():
 
     resposta = us.auth_steam(contexto={"request":request})
 
-    assert resposta[0] ==  {"mensagem": "ID da Steam registrado"}
+    assert resposta[0] ==  {"mensagem": "id da steam registrado"}
     assert resposta[1] == 200
     assert usuario_mock.steam_id == body["steam_id"]
     usuario_mock.salvar.assert_called_once()

@@ -48,7 +48,7 @@ def validar_confirmacao_email(body):
 def validar_senha(body):
     senha = body["senha"]
     if not 8 <= len(senha) < 100:
-        return "Senha inválida. Sua senha deve conter entre 8 a 100 caracteres"
+        return "senha inválida. sua senha deve conter entre 8 a 100 caracteres"
 
     regex_letra_minuscula = r"[a-z]"
     regex_letra_maiuscula = r"[A-Z]"
@@ -64,7 +64,7 @@ def validar_senha(body):
     for regex in senha_regex:
         if re.search(regex, senha) is None:
             return "senha invalida. a senha precisa conter, oito ou mais caracteres " +\
-                "com uma combinação de letras, numeros e simbolos"
+                "com uma combinacao de letras, numeros e simbolos"
     return None
 
 def validar_confirmacao_senha(body):

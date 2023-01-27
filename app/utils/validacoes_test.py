@@ -72,7 +72,7 @@ def test_validar_email_deve_rejeitar_email_incompleto():
         body = {"email" : email}
         resposta = val.validar_email(body)
 
-        assert resposta == "Email invalido, favor verificar email"
+        assert resposta == "email invalido, favor verificar email"
 
 def test_validar_email_deve_rejeitar_email_encerrando_com_ponto():
     email_encerrando_com_ponto = "Email.Comum@email.com."
@@ -86,7 +86,7 @@ def test_validar_email_deve_rejeitar_email_encerrando_com_ponto():
         body = {"email" : email}
         resposta = val.validar_email(body)
 
-    assert resposta == "Email invalido, favor verificar email"
+    assert resposta == "email invalido, favor verificar email"
 
 def test_validar_email_deve_rejeitar_email_com_dois_ou_mais_arroba():
     email_com_dois_ou_mais_arroba = "Email@Comum@email.com.br"
@@ -100,7 +100,7 @@ def test_validar_email_deve_rejeitar_email_com_dois_ou_mais_arroba():
         body = {"email" : email}
         resposta = val.validar_email(body)
 
-        assert resposta == "Email invalido, favor verificar email"
+        assert resposta == "email invalido, favor verificar email"
 
 def test_validar_email_deve_rejeitar_email_com_dois_ou_mais_caracteres_juntos():
     email_com_dois_caracteres_juntos = "Email+-Comum@email.com.br"
@@ -114,28 +114,28 @@ def test_validar_email_deve_rejeitar_email_com_dois_ou_mais_caracteres_juntos():
         body = {"email" : email}
         resposta = val.validar_email(body)
 
-        assert resposta == "Email invalido, favor verificar email"
+        assert resposta == "email invalido, favor verificar email"
 
 def test_validar_email_deve_rejeitar_email_sem_conteudo_antes_do_arroba():
     email_sem_conteudo_antes_do_arroba = "@email.com.br"
     body = {"email" : email_sem_conteudo_antes_do_arroba}
     resposta = val.validar_email(body)
 
-    assert resposta == "Email invalido, favor verificar email"
+    assert resposta == "email invalido, favor verificar email"
 
 def test_validar_email_deve_rejeitar_email_sem_arroba():
     email_sem_arroba = "EmailComumemail.com.br"
     body = {"email" : email_sem_arroba}
     resposta = val.validar_email(body)
 
-    assert resposta == "Email invalido, favor verificar email"
+    assert resposta == "email invalido, favor verificar email"
 
 def test_validar_email_deve_rejeitar_email_sem_dominio():
     email_sem_dominio = "EmailComum@.com.br"
     body = {"email" : email_sem_dominio}
     resposta = val.validar_email(body)
 
-    assert resposta == "Email invalido, favor verificar email"
+    assert resposta == "email invalido, favor verificar email"
 
 def test_validar_senha_deve_aceitar_senha_que_cumpre_requisitos():
     senha_que_cumpre_requisitos = "Senh@P3rfeita"
@@ -149,46 +149,46 @@ def test_validar_senha_deve_rejeitar_senha_abaixo_de_oito_caracteres():
     body = {"senha" : senha_abaixo_de_oito_caracteres}
     erro = val.validar_senha(body)
 
-    assert erro == "Senha inválida. Sua senha deve conter entre 8 a 100 caracteres"
+    assert erro == "senha inválida. sua senha deve conter entre 8 a 100 caracteres"
 
 def test_validar_senha_deve_rejeitar_senha_acima_de_cem_caracteres():
     senha_acima_de_cem_caracteres = "SenhaP3rfeit@" * 10
     body = {"senha" : senha_acima_de_cem_caracteres}
     erro = val.validar_senha(body)
 
-    assert erro == "Senha inválida. Sua senha deve conter entre 8 a 100 caracteres"
+    assert erro == "senha inválida. sua senha deve conter entre 8 a 100 caracteres"
 
 def test_validar_senha_deve_rejeitar_senha_sem_letras_minuscula():
     senha_sem_letras_minuscula = "SEMLETRAM1NUSCUL@"
     body = {"senha" : senha_sem_letras_minuscula}
     erro = val.validar_senha(body)
 
-    assert erro == "Senha inválida. A senha precisa conter, oito ou mais caracteres " +\
-                "com uma combinação de letras, números e símbolos"
+    assert erro == "senha invalida. a senha precisa conter, oito ou mais caracteres " +\
+                "com uma combinacao de letras, numeros e simbolos"
 
 def test_validar_senha_deve_rejeitar_senha_sem_letras_maiuscula():
     senha_sem_letras_maiuscula = "semletrasma1uscul@"
     body = {"senha" : senha_sem_letras_maiuscula}
     erro = val.validar_senha(body)
 
-    assert erro == "Senha inválida. A senha precisa conter, oito ou mais caracteres " +\
-                "com uma combinação de letras, números e símbolos"
+    assert erro == "senha invalida. a senha precisa conter, oito ou mais caracteres " +\
+                "com uma combinacao de letras, numeros e simbolos"
 
 def test_validar_senha_deve_rejeitar_senha_sem_numero():
     senha_sem_numero = "Sem_Numeros"
     body = {"senha" : senha_sem_numero}
     erro = val.validar_senha(body)
 
-    assert erro == "Senha inválida. A senha precisa conter, oito ou mais caracteres " +\
-                "com uma combinação de letras, números e símbolos"
+    assert erro == "senha invalida. a senha precisa conter, oito ou mais caracteres " +\
+                "com uma combinacao de letras, numeros e simbolos"
 
 def test_validar_senha_deve_rejeitar_senha_sem_caractere_especial():
     senha_sem_caractere_especial = "SemCractereEspec1al"
     body = {"senha" : senha_sem_caractere_especial}
     erro = val.validar_senha(body)
 
-    assert erro == "Senha inválida. A senha precisa conter, oito ou mais caracteres " +\
-                "com uma combinação de letras, números e símbolos"
+    assert erro == "senha invalida. a senha precisa conter, oito ou mais caracteres " +\
+                "com uma combinacao de letras, numeros e simbolos"
 
 def test_validar_limite_de_caracteres_retorna_none_caso_nao_hajam_erros():
     body_correto = {
