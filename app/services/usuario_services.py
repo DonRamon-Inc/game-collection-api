@@ -16,7 +16,7 @@ logger = Logger("UsuarioController")
 def criar_usuario(contexto):
     body = contexto["request"].get_json()
     body = val.validar_excesso_espacamento_nome(body)
-    logger.info(f"Chamada recebida com parâmetros {body.keys()}")
+    logger.info(f"chamada recebida com parametros {body.keys()}")
     body_invalido = val.validar_body(
       body,
       {
@@ -55,52 +55,52 @@ def logar_usuario(contexto):
     if body_invalido:
         return jsonify(body_invalido),400
 
-    email, senha = body['email'], body["senha"]
+    email, senha = body["email"], body["senha"]
     usuario = u.Usuario.query.filter_by(email=email).first()
     if not usuario or not usuario.verificar_senha(senha):
-        return {'mensagem': 'Email ou Senha não confere'}, 400
+        return {"mensagem": "email ou senha nao confere"}, 400
 
     token_autenticacao = jwt.encode({
-      'sub' : usuario.id,
-      'user' : usuario.nome,
-      'iat' : datetime.datetime.utcnow(),
-      'exp' :  datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+      "sub" : usuario.id,
+      "user" : usuario.nome,
+      "iat" : datetime.datetime.utcnow(),
+      "exp" :  datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
     }, config.SECRET_KEY)
-    return {'token' : token_autenticacao}
+    return {"token" : token_autenticacao}
 
 @auth.token_required
 def auth_steam(contexto):
-    usuario = contexto['usuario']
-    body = contexto['request'].get_json()
-    logger.info(f"Chamada recebida com parâmetros {body}")
+    usuario = contexto["usuario"]
+    body = contexto["request"].get_json()
+    logger.info(f"chamada recebida com parametros {body}")
     body_invalido = val.validar_body(body,{"steam_id":50})
     if body_invalido:
         return jsonify(body_invalido), 400
     steam_id = body["steam_id"]
     usuario.steam_id = steam_id
     usuario.salvar()
-    return {'mensagem': 'ID da Steam registrado'}, 200
+    return {"mensagem": "id da steam registrado"}, 200
 
 @auth.token_required
 def auth_steam_delete(contexto):
-    usuario = contexto['usuario']
+    usuario = contexto["usuario"]
     usuario.steam_id = None
     usuario.salvar()
-    return '', 204
+    return "", 204
 
 def validar_usuario(contexto):
-    body = contexto['request'].get_json()
-    logger.info(f"Chamada recebida com parâmetros {body.keys()}")
+    body = contexto["request"].get_json()
+    logger.info(f"chamada recebida com parametros {body.keys()}")
     body_invalido = val.validar_body(body,
         {"email":100, "data_nascimento":10},
         [val.validar_data_nascimento]
     )
     if body_invalido:
         return jsonify(body_invalido), 400
-    email, data_nascimento = body['email'], body['data_nascimento']
+    email, data_nascimento = body["email"], body["data_nascimento"]
     usuario = u.Usuario.query.filter_by(email=email).first()
     if not usuario:
-        return {"erro": "usuário inválido"}, 400
+        return {"erro": "usuario invalido"}, 400
     if str(usuario.data_nascimento) == data_nascimento and val.validar_token(usuario) is False:
         token_esqueci_senha = str(secrets.token_hex()) + str(
           datetime.datetime.timestamp(datetime.datetime.utcnow())).replace(".","")
@@ -111,7 +111,7 @@ def validar_usuario(contexto):
         return {"token": f"{token_esqueci_senha}"}, 201
     if str(usuario.data_nascimento) == data_nascimento and val.validar_token(usuario) is True:
         return {"token": f"{usuario.token_esqueci_senha}"}, 200
-    return {"erro": "usuário inválido"}, 400
+    return {"erro": "usuario invalido"}, 400
 
 def atualizar_senha(contexto):
     body = contexto["request"].get_json()
@@ -121,12 +121,12 @@ def atualizar_senha(contexto):
     )
     if body_invalido:
         return jsonify(body_invalido), 400
-    logger.info(f"Chamada recebida com parâmetros {body.keys()}")
-    token_esqueci_senha = body['token_esqueci_senha']
-    senha = body['senha']
+    logger.info(f"chamada recebida com parametros {body.keys()}")
+    token_esqueci_senha = body["token_esqueci_senha"]
+    senha = body["senha"]
     usuario = u.Usuario.query.filter_by(token_esqueci_senha=token_esqueci_senha).first()
     if not usuario or val.validar_token(usuario) is False:
-        return {"erro": "token inválido"}, 400
+        return {"erro": "token invalido"}, 400
     usuario.token_esqueci_senha = None
     usuario.token_valido_ate = None
     usuario.senha = senha

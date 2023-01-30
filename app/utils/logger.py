@@ -7,7 +7,7 @@ class Logger:
         self._origem = origem
 
     def _pegar_hora_atual(self):
-        return datetime.now().isoformat(timespec='seconds')
+        return datetime.now().isoformat(timespec="seconds")
 
     def _imprimir_log(self, tipo_log, msg):
         data_atual = self._pegar_hora_atual()
@@ -23,10 +23,10 @@ class Logger:
         print(conteudo)
 
     def info(self, msg):
-        self._imprimir_log('INFO', msg)
+        self._imprimir_log("INFO", msg)
 
     def warning(self, msg):
-        self._imprimir_log('WARNING', msg)
+        self._imprimir_log("WARNING", msg)
 
     def error(self, msg):
-        self._imprimir_log('ERROR', msg)
+        self._imprimir_log("ERROR", msg)

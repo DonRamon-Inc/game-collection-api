@@ -41,7 +41,7 @@ def test_esqueci_senha():
     val.validar_token=mock.Mock(return_value=False)
     secrets.token_hex = mock.Mock(return_value="token")
 
-    resposta=us.validar_usuario(contexto={'request':request})
+    resposta=us.validar_usuario(contexto={"request":request})
 
     assert resposta == ({"token": "token"+"16600032000"}, 201)
     val.validar_body.assert_called_once_with(body,
@@ -53,21 +53,21 @@ def test_esqueci_senha():
 
 def test_auth_steam():
     body = {
-        "id" : '137',
-        "steam_id": 'teste1'
+        "id" : "137",
+        "steam_id": "teste1"
     }
 
     request = mock.NonCallableMock(
         get_json=mock.Mock(return_value=body),
-        headers=mock.NonCallableMock(get=mock.Mock(return_value='a b'))
+        headers=mock.NonCallableMock(get=mock.Mock(return_value="a b"))
     )
 
-    jwt.get_unverified_header = mock.Mock(return_value={'alg':''})
+    jwt.get_unverified_header = mock.Mock(return_value={"alg":""})
 
     salvar_mock = mock.Mock()
 
-    jwt.decode = mock.Mock(return_value={'sub':body['id']})
-    usuario_mock = mock.NonCallableMock(id=body['id'],steam_id='teste2',salvar=salvar_mock)
+    jwt.decode = mock.Mock(return_value={"sub":body["id"]})
+    usuario_mock = mock.NonCallableMock(id=body["id"],steam_id="teste2",salvar=salvar_mock)
 
     val.validar_body = mock.Mock(return_value=None)
 
@@ -76,9 +76,9 @@ def test_auth_steam():
         query=mock.Mock(filter_by=mock.Mock(return_value=filter_by_result))
     )
 
-    resposta = us.auth_steam(contexto={'request':request})
+    resposta = us.auth_steam(contexto={"request":request})
 
-    assert resposta[0] ==  {'mensagem': 'ID da Steam registrado'}
+    assert resposta[0] ==  {"mensagem": "id da steam registrado"}
     assert resposta[1] == 200
-    assert usuario_mock.steam_id == body['steam_id']
+    assert usuario_mock.steam_id == body["steam_id"]
     usuario_mock.salvar.assert_called_once()

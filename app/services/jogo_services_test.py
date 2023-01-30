@@ -33,8 +33,8 @@ def create_mock_request(headers = None):
     return mock.NonCallableMock(headers=headers)
 
 def mock_token_required_decorator():
-    jwt.get_unverified_header = mock.Mock(return_value={'alg': None})
-    jwt.decode = mock.Mock(return_value={'sub': None})
+    jwt.get_unverified_header = mock.Mock(return_value={"alg": None})
+    jwt.decode = mock.Mock(return_value={"sub": None})
 
     usuario_mock = mock.NonCallableMock(
         steam_id=STEAM_ID,
@@ -157,7 +157,7 @@ def test_favorita_jogo_se_ele_nao_esta_no_banco_de_dados():
 
     assert retorno == ({"mensagem": "jogo favoritado com sucesso"}, 201)
 
-    url_request = f'{config.STEAM_STORE_URL}/api/appdetails'
+    url_request = f"{config.STEAM_STORE_URL}/api/appdetails"
     requests.get.assert_called_once_with(
         url_request, params = {
                 "appids": id_jogo,
@@ -188,7 +188,7 @@ def test_favorita_jogo_se_ele_nao_esta_no_banco_de_dados():
 def test_favorita_jogo_se_ele_ja_esta_no_banco_de_dados():
     id_jogo = "500"
     usuario_atual = mock_token_required_decorator()
-    novo_jogo_favorito = {'jogo_favorito': 'jogo'}
+    novo_jogo_favorito = {"jogo_favorito": "jogo"}
     salvar_mock = mock.Mock()
     query_filter_mock = mock.NonCallableMock(first=mock.Mock(return_value=novo_jogo_favorito))
     jf.JogoFavorito = mock.Mock(
@@ -218,7 +218,7 @@ def test_favorita_jogo_se_ele_ja_esta_no_banco_de_dados():
 def test_desfavoritar_jogo():
     usuario_atual = mock_token_required_decorator()
     id_jogo = "500"
-    jogo_favorito = {'jogo_favorito': 'jogo'}
+    jogo_favorito = {"jogo_favorito": "jogo"}
     query_filter_mock = mock.NonCallableMock(first=mock.Mock(return_value=jogo_favorito))
     jf.JogoFavorito = mock.Mock(
         return_value = jogo_favorito,
